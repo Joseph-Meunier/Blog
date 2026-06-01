@@ -7,7 +7,7 @@ const isProd = process.env.NODE_ENV === 'production';
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://GastonDeSade.github.io',
+	site: 'https://Joseph-Meunier.github.io',
   	base: isProd ? '/blog' : '/',
 	integrations: [mdx(), sitemap()],
 	markdown: {

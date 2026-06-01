@@ -36,4 +36,5 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
+            # GitHub Pages must be enabled in repository settings and configured to use GitHub Actions.
         uses: actions/deploy-pages@v4
