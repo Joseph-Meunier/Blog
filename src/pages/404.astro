@@ -4,6 +4,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import HeaderLink from '../components/HeaderLink.astro';
 const isProd = process.env.NODE_ENV === 'production';
+const siteBase = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 ---
 
@@ -76,7 +77,7 @@ const isProd = process.env.NODE_ENV === 'production';
 						Oups ! La page que vous recherchez n'existe pas.<br>
 						Elle a peut-être été déplacée, supprimée ou l'URL est incorrecte.
 					</p>
-						<HeaderLink href={isProd ? '/blog' : '/'}>Retour à l'accueil</HeaderLink>
+						<HeaderLink href={siteBase || '/'}>Retour à l'accueil</HeaderLink>
 				</div>
 			</div>
 		</main>

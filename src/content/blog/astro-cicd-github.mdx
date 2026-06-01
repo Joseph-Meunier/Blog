@@ -26,7 +26,7 @@ Table des matières
 
 ## Pré-requis
 Je pars du principe que tu as déjà :
-- Un site Astro fonctionnel et uniquement statique (si non , suis mon tutoriel [Créer un blog moderne avec Astro](/blog/astro-blog/)),
+- Un site Astro fonctionnel et uniquement statique (si non , suis mon tutoriel [Créer un blog moderne avec Astro](/Blog/blog/astro-blog/)),
 - Un dépôt GitHub pour ton site,
 
 Et que tu sais te servir de Git.
@@ -36,7 +36,7 @@ Et que tu sais te servir de Git.
 Le paramètre crucial pour GitHub Pages est :
 ```mjs
 export default defineConfig({
-  site: 'https://monuser.github.io',
+  site: 'https://monuser.github.io/nom-du-repo',
   base: '/nom-du-repo', 
 });
 ```
@@ -60,22 +60,22 @@ Pour que tout fonctionne aussi bien en local qu’en production, ajoute cette lo
 
 const isProd = process.env.NODE_ENV === 'production';
 export default defineConfig({
-  site: 'https://monuser.github.io',
-  base: isProd ? '/blog' : '/',
+  site: 'https://monuser.github.io/Blog',
+  base: isProd ? '/Blog' : '/',
 });
 ```
 
-Ici j’utilise /blog comme nom de repo. 
-Si on ne rajoute pas base: isProd ? '/blog' : '/', seul la production fonctionnerait.
+Ici j’utilise Blog comme nom de repo. 
+Si on ne rajoute pas base: isProd ? '/Blog' : '/', seul la production fonctionnerait.
 
 ## Corriger les liens du header
 
 Pour la même raison, il faut adapter les liens de navigation.
 Dans src/components/Header.astro :
 ```astro
-<HeaderLink href={isProd ? '/blog' : '/'}>Home</HeaderLink>
-<HeaderLink href={isProd ? '/blog/blog' : '/blog'}>Blog</HeaderLink>
-<HeaderLink href={isProd ? '/blog/about' : '/about'}>About</HeaderLink>
+<HeaderLink href={isProd ? '/Blog' : '/'}>Home</HeaderLink>
+<HeaderLink href={isProd ? '/Blog/blog' : '/blog'}>Blog</HeaderLink>
+<HeaderLink href={isProd ? '/Blog/about' : '/about'}>About</HeaderLink>
 ```
 
 ## Corriger les imports et favicons
@@ -83,7 +83,7 @@ Dans src/components/Header.astro :
 De même pour les favicons et autres assets.
 Dans src/components/BaseHead.astro :
 ```astro
-<link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}favicon.svg`} />
+<link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}favicon.ico`} />
 <link rel="sitemap" href={`${import.meta.env.BASE_URL}sitemap-index.xml`} />
 <link rel="preload" href={`${import.meta.env.BASE_URL}fonts/atkinson-regular.woff`} as="font" type="font/woff" crossorigin />
 ```
@@ -95,19 +95,20 @@ Dans ton projet, crée le fichier .github/workflows/deploy.yml :
 name: Deploy Astro to GitHub Pages
 on:
   push:
-    branches: [main]
+    branches: [master]
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
@@ -120,8 +121,10 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
+          publish_branch: gh-pages
+          enable_jekyll: false
 ```
-Ce document définit un workflow qui s’exécutera à chaque push sur la branche main quand tu auras configuré GitHub Pages. (Voir étape suivante.).
+Ce document définit un workflow qui s’exécutera à chaque push sur la branche master quand tu auras configuré GitHub Pages pour publier la branche gh-pages. (Voir étape suivante.).
 Un workflow est une série d’étapes automatisées. En général, on va faire des tests pour savioir si le code est correct, puis construire le projet, et enfin le déployer.
 Celui-ci installe Node.js, les dépendances, construit le site Astro, puis déploie le contenu du dossier dist sur GitHub Pages.
 
@@ -130,7 +133,7 @@ Celui-ci installe Node.js, les dépendances, construit le site Astro, puis dépl
 
 Sur ton repo GitHub : va dans Settings → Pages
 
-Dans Build and Deployment → Source, choisis GitHub Actions
+Dans Build and Deployment → Source, choisis Deploy from a branch, puis sélectionne la branche gh-pages.
 
 Commit ton code et pousse-le sur la branche principale :
 
@@ -142,7 +145,7 @@ git push
 GitHub Pages va générer et déployer automatiquement ton site.
 
 Ton blog est accessible à :
-https://'username'.github.io/blog/
+https://username.github.io/Blog/
 
 
 
