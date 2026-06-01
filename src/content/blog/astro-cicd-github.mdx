@@ -1,0 +1,160 @@
+---
+title: "Astro & GitHub Actions : CI/CD simplifié"
+description: "Apprends à automatiser le déploiement de ton site Astro avec GitHub Actions et à configurer correctement Astro pour GitHub Pages."
+startDate: "2025-11-07"
+pubDate: "2025-11-30"
+updatedDate: "2025-11-08"
+heroImage: "../../assets/articles/astro-cicd-github/hero.webp"
+isPublished: true
+readingTime: "8 min"
+tags: ["astro", "github-actions", "cicd", "deployment", "devops"]
+---
+
+
+Automatiser le déploiement de ton blog Astro est simple grâce à GitHub Actions.
+Voyons ensemble comment configurer le workflow pour publier ton site à chaque push.
+
+Table des matières
+- [Pré-requis](#pré-requis)
+- [Configurer astro.config.mjs](#configurer-astro-config-mjs)
+- [Adapter les routes et assets](#adapter-les-routes-et-assets)
+- [Corriger les liens du header](#corriger-les-liens-du-header)
+- [Corriger les imports et favicons](#corriger-les-imports-et-favicons)
+- [Créer le workflow GitHub Actions](#créer-le-workflow-github-actions)
+- [Déployer sur GitHub Pages](#déployer-sur-github-pages)
+- [Conclusion](#conclusion)
+
+## Pré-requis
+Je pars du principe que tu as déjà :
+- Un site Astro fonctionnel et uniquement statique (si non , suis mon tutoriel [Créer un blog moderne avec Astro](/blog/astro-blog/)),
+- Un dépôt GitHub pour ton site,
+
+Et que tu sais te servir de Git.
+
+## Configurer astro.config.mjs
+
+Le paramètre crucial pour GitHub Pages est :
+```mjs
+export default defineConfig({
+  site: 'https://monuser.github.io',
+  base: '/nom-du-repo', 
+});
+```
+
+Pourquoi écrire base: '/nom-du-repo' ?
+
+GitHub Pages servira ton site à l’adresse :
+```arduino
+https://nomuser.github.io/nom-du-repo/
+```
+
+Donc si ton dépôt s’appelle nom-du-repo, la racine de ton site n’est pas / mais /nom-du-repo.
+
+Sans ce préfixe, les liens, images et scripts ne fonctionneront pas.
+
+## Adapter les routes et assets
+
+Pour que tout fonctionne aussi bien en local qu’en production, ajoute cette logique :
+
+```mjs
+
+const isProd = process.env.NODE_ENV === 'production';
+export default defineConfig({
+  site: 'https://monuser.github.io',
+  base: isProd ? '/blog' : '/',
+});
+```
+
+Ici j’utilise /blog comme nom de repo. 
+Si on ne rajoute pas base: isProd ? '/blog' : '/', seul la production fonctionnerait.
+
+## Corriger les liens du header
+
+Pour la même raison, il faut adapter les liens de navigation.
+Dans src/components/Header.astro :
+```astro
+<HeaderLink href={isProd ? '/blog' : '/'}>Home</HeaderLink>
+<HeaderLink href={isProd ? '/blog/blog' : '/blog'}>Blog</HeaderLink>
+<HeaderLink href={isProd ? '/blog/about' : '/about'}>About</HeaderLink>
+```
+
+## Corriger les imports et favicons
+
+De même pour les favicons et autres assets.
+Dans src/components/BaseHead.astro :
+```astro
+<link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}favicon.svg`} />
+<link rel="sitemap" href={`${import.meta.env.BASE_URL}sitemap-index.xml`} />
+<link rel="preload" href={`${import.meta.env.BASE_URL}fonts/atkinson-regular.woff`} as="font" type="font/woff" crossorigin />
+```
+
+## Créer le workflow GitHub Actions
+Dans ton projet, crée le fichier .github/workflows/deploy.yml :
+
+```yaml
+name: Deploy Astro to GitHub Pages
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build site
+        run: npm run build
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+```
+Ce document définit un workflow qui s’exécutera à chaque push sur la branche main quand tu auras configuré GitHub Pages. (Voir étape suivante.).
+Un workflow est une série d’étapes automatisées. En général, on va faire des tests pour savioir si le code est correct, puis construire le projet, et enfin le déployer.
+Celui-ci installe Node.js, les dépendances, construit le site Astro, puis déploie le contenu du dossier dist sur GitHub Pages.
+
+
+## Déployer sur GitHub Pages
+
+Sur ton repo GitHub : va dans Settings → Pages
+
+Dans Build and Deployment → Source, choisis GitHub Actions
+
+Commit ton code et pousse-le sur la branche principale :
+
+```bash
+git add .
+git commit -m "Déploiement initial"
+git push
+```
+GitHub Pages va générer et déployer automatiquement ton site.
+
+Ton blog est accessible à :
+https://'username'.github.io/blog/
+
+
+
+## Conclusion
+
+En reliant Astro et GitHub Actions, tu bénéficies d’un déploiement automatisé, rapide et fiable.
+Ton site est toujours à jour, sans manipulation manuelle.
+
+Références
+
+- [Documentation Astro](https://docs.astro.build)
+- [GitHub Actions Documentation](https://docs.github.com/en/actions)
+
+
+

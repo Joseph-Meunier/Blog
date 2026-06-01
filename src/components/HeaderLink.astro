@@ -1,0 +1,60 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+type Props = HTMLAttributes<'a'>;
+
+const { href, class: className, ...props } = Astro.props;
+const { pathname } = Astro.url;
+
+const hrefStr = String(href ?? '');
+const normalizePath = (p: string) => (p || '/').split('?')[0].split('#')[0];
+
+// compute linkPath (absolute path portion)
+let linkPath = normalizePath(hrefStr);
+try {
+	if (hrefStr.startsWith('http://') || hrefStr.startsWith('https://')) {
+		linkPath = new URL(hrefStr).pathname;
+	} else if (!linkPath.startsWith('/')) {
+		linkPath = '/' + linkPath;
+	}
+} catch (e) {
+	// keep linkPath as-is on error
+}
+
+// Handle sites deployed to a subpath (BASE_URL), e.g. import.meta.env.BASE_URL === '/blog/'
+const siteBaseRaw = String(import.meta.env.BASE_URL ?? '/');
+const siteBase = siteBaseRaw === '/' ? '' : siteBaseRaw.replace(/\/$/, '');
+
+const stripBase = (p: string) => {
+	const norm = normalizePath(p);
+	if (!siteBase) return norm || '/';
+	if (norm === siteBase) return '/';
+	return norm.startsWith(siteBase + '/') ? norm.slice(siteBase.length) || '/' : norm;
+};
+
+const relPath = stripBase(pathname).replace(/\/$/, '') || '/';
+const relLink = stripBase(linkPath).replace(/\/$/, '') || '/';
+
+// If the link points to the site base ("home"), it's active only on the exact base page.
+// For section links (e.g. "blog"), consider them active for the section and its children.
+let isActive = false;
+if (relLink === '/' || relLink === '') {
+	isActive = relPath === '/' || relPath === '';
+} else {
+	isActive = relPath === relLink || relPath.startsWith(relLink + '/');
+}
+---
+
+<a href={href} class:list={[className, { active: isActive }]} {...props}>
+	<slot />
+</a>
+<style>
+	a {
+		display: inline-block;
+			text-decoration: none;
+	}
+	a.active {
+		font-weight: bolder;
+		text-decoration: none;
+	}
+</style>

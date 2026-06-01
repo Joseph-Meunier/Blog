@@ -1,0 +1,85 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import HeaderLink from '../components/HeaderLink.astro';
+const isProd = process.env.NODE_ENV === 'production';
+
+---
+
+<html lang="fr">
+	<head>
+		<BaseHead title="Page non trouvée" description="La page que vous recherchez n'existe pas" />
+		<style>
+			.error-container {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				min-height: 60vh;
+				text-align: center;
+				padding: 2rem;
+			}
+			.error-content {
+				max-width: 600px;
+			}
+			.error-code {
+				font-size: 6rem;
+				font-weight: 700;
+				color: var(--accent);
+				margin: 0;
+				line-height: 1;
+			}
+			.error-title {
+				font-size: 2rem;
+				margin: 1rem 0;
+				color: rgb(var(--black));
+			}
+			.error-description {
+				font-size: 1.2rem;
+				margin-bottom: 2rem;
+				color: rgb(var(--gray));
+				line-height: 1.6;
+			}
+			.back-home {
+				display: inline-block;
+				padding: 12px 24px;
+				background: var(--accent);
+				color: white;
+				text-decoration: none;
+				border-radius: 8px;
+				font-weight: 600;
+				transition: background 0.3s ease;
+			}
+			.back-home:hover {
+				background: var(--accent-dark);
+			}
+			/* Mode sombre */
+			[data-theme="dark"] .error-code {
+				color: var(--accent);
+			}
+			[data-theme="dark"] .error-title {
+				color: rgb(var(--black));
+			}
+			[data-theme="dark"] .error-description {
+				color: rgb(var(--gray));
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<div class="error-container">
+				<div class="error-content">
+					<h1 class="error-code">404</h1>
+					<h2 class="error-title">Page non trouvée</h2>
+					<p class="error-description">
+						Oups ! La page que vous recherchez n'existe pas.<br>
+						Elle a peut-être été déplacée, supprimée ou l'URL est incorrecte.
+					</p>
+						<HeaderLink href={isProd ? '/blog' : '/'}>Retour à l'accueil</HeaderLink>
+				</div>
+			</div>
+		</main>
+		<Footer />
+	</body>
+</html> 

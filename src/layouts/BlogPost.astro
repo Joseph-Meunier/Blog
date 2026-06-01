@@ -1,0 +1,211 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import Header from '../components/Header.astro';
+import Comments from '../components/Comments.astro';
+
+type Props = CollectionEntry<'blog'>['data'];
+
+const { title, description, pubDate, updatedDate: rawUpdatedDate, heroImage, readingTime, tags } = Astro.props;
+
+// Scope `updatedDate` to the whole page (frontmatter) so it can be used in the template
+// Make sure we compare date values, not object identity
+const isUpdatedDateIsOlderThanPubDate = rawUpdatedDate && rawUpdatedDate.valueOf() > pubDate.valueOf();
+const updatedDate = isUpdatedDateIsOlderThanPubDate ? rawUpdatedDate : null;
+
+---
+
+<html lang="en">
+	<head>
+		<BaseHead title={title} description={description} />
+		<style>
+			main {
+				width: calc(100% - 2em);
+				max-width: 100%;
+				margin: 0;
+			}
+			.hero-image {
+				width: 100%;
+			}
+			.hero-image img {
+				display: block;
+				margin: 0 auto;
+				border-radius: 12px;
+				box-shadow: var(--box-shadow);
+			}
+			.prose {
+				width: 720px;
+				max-width: calc(100% - 2em);
+				margin: auto;
+				padding: 1em;
+				color: rgb(var(--gray-dark));
+			}			
+			.prose pre {
+				background: #1e1e1e;
+				border-radius: 8px;
+				padding: 1rem;
+				margin: 1.5rem 0;
+				overflow-x: auto;
+				border: 1px solid #333;
+			}
+			
+			.prose code {
+				background: #f1f1f1;
+				padding: 0.2rem 0.4rem;
+				border-radius: 4px;
+				font-size: 0.9em;
+				color: #d63384;
+			}
+			
+			.prose pre code {
+				background: transparent;
+				padding: 0;
+				color: inherit;
+				font-size: 0.9rem;
+				line-height: 1.5;
+			}
+			.title {
+				margin-bottom: 1em;
+				padding: 1em 0;
+				text-align: center;
+				line-height: 1;
+			}
+			.title h1 {
+				margin: 0 0 0.5em 0;
+			}
+			.date {
+				margin-bottom: 0.5em;
+				color: rgb(var(--gray));
+				display: grid;
+			}
+			.date-2cards{
+				grid-template-columns: 1fr 1fr;
+			}
+			.date-3cards{
+				grid-template-columns: 1fr 1fr 1fr;
+			}
+			.date-card {
+				background: white;
+				border-radius: 12px;
+				padding: 1.5rem;
+				box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+				border: 1px solid rgba(var(--gray-light), 0.2);
+				transition: all 0.3s ease;
+				text-align: center;
+			}
+
+			.date-card:hover {
+				transform: translateY(-4px);
+				box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.05);
+			}
+
+			.date-card.startwrite {
+				border-top: 4px solid #FECA3D;
+			}
+
+			.date-card.update {
+				border-top: 4px solid #10b981;
+			}
+
+			.date-card:not(.update):not(.startwrite) {
+				border-top: 4px solid var(--accent);
+			}
+			
+			.date-card-icon {
+				font-size: 2rem;
+				margin-bottom: 0.5rem;
+				display: block;
+			}
+			
+			.date-card-title {
+				font-weight: 600;
+				color: black;
+				margin-bottom: 0.5rem;
+				font-size: 0.9rem;
+				text-transform: uppercase;
+				letter-spacing: 0.5px;
+			}
+			
+			.date-card-value {
+				font-size: 1.1rem;
+				font-weight: 500;
+				color: var(--accent);
+			}
+			
+			.date-card.startwrite .date-card-value {
+				color: #FECA3D;
+			}
+
+			.date-card.update .date-card-value {
+				color: #10b981;
+			}
+			.last-updated-on {
+				font-style: italic;
+			}
+
+		</style>
+	</head>
+
+	<body>
+		<Header />
+		<main>
+			<article>
+				<div class="hero-image">
+					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
+				</div>
+				<div class="prose">
+					<div class="title">
+						<div class={`date ${updatedDate ? 'date-3cards' : 'date-2cards'}`}>
+							<div class="date-card startwrite">
+								<span class="date-card-icon">✍️</span>
+								<div class="date-card-title">Ecrit le</div>
+								<div class="date-card-value">
+									<FormattedDate date={pubDate} />
+								</div>
+							</div>
+							<div class="date-card">
+								<span class="date-card-icon">📅</span>
+								<div class="date-card-title">Publié le</div>
+								<div class="date-card-value">
+									<FormattedDate date={pubDate} />
+								</div>
+							</div>
+							{updatedDate && (
+								<div class="date-card update">
+									<span class="date-card-icon">🔄</span>
+									<div class="date-card-title">Mis à jour le</div>
+									<div class="date-card-value">
+										<FormattedDate date={updatedDate} />
+									</div>
+								</div>
+							)}
+						</div>
+						<h1>{title}</h1>
+						<p>Temps de lecture : <i>{readingTime}</i></p>
+						{tags && (
+							<p>
+								Tags :{' '}
+								{tags.map((tag, index) => (
+									
+									<i>
+										<span>
+											{tag}
+											{index < tags.length - 1 ? ', ' : ''}
+										</span>
+									</i>
+								))}
+							</p>
+						)}
+						<hr />
+					</div>
+					<slot />
+				</div>
+			</article>
+			<Comments repo="GastonDeSade/blog" issueTerm="pathname" />
+		</main>
+		<Footer />
+	</body>
+</html>

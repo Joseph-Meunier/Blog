@@ -1,0 +1,84 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import FormattedDateArray from '../components/FormattedDateArray.astro';
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+const isProd = process.env.NODE_ENV === 'production';
+let posts = (await getCollection('blog'))
+    .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		
+	</head>
+	<style>
+		h1 {
+			text-align: center;
+			margin-top: 2rem;
+			font-size: 3rem;
+		}
+	</style>
+	<body>
+		<Header />
+		<main>
+            <h1>📊 Statut des posts</h1>
+            <table>
+                <tr>
+                    <th>Image</th>
+                    <th>Titre</th>
+                    <th>Statut</th>
+                    <th>Date de création</th>
+                    <th>Date de publication</th>
+                    <th>Date de mise à jour</th>
+                </tr>
+					{
+						posts.map((post) => (
+							<tr>
+								<td>
+                                    <a href={isProd ? `/blog/blog/${post.id}/` : `/blog/${post.id}/`}>
+										{post.data.heroImage && (
+											<Image width={720} height={360} src={post.data.heroImage} alt="" />
+										)}
+                                    </a>
+                                </td>
+								<td>
+									<a href={isProd ? `/blog/blog/${post.id}/` : `/blog/${post.id}/`}>
+										<p class="title">{post.data.title}</p>
+									</a>
+								</td>
+								<td>
+									<p class="status">
+                                        {post.data.isPublished && post.data.pubDate.valueOf() < Date.now() ? 'Publié' : 
+                                        (post.data.isPublished && post.data.pubDate.valueOf() > Date.now() ? 'À venir' : 'Brouillon')}</p>
+								</td>
+                                <td>
+									<p class="date">
+										<FormattedDateArray date={post.data.startDate} />
+									</p>
+								</td>
+                                <td>
+                                    <p class="date">
+                                        <FormattedDateArray date={post.data.pubDate} />
+                                    </p>
+                                </td>
+                                <td>
+                                    <p class="date">
+                                        <FormattedDateArray date={post.data.updatedDate} />
+                                    </p>
+                                </td>
+							</tr>
+						))
+					}
+				</table>
+
+        </main>
+
+		<Footer />
+	</body>
+</html>

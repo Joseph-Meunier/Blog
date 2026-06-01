@@ -1,0 +1,50 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		
+	</head>
+	<style>
+		h1 {
+			text-align: center;
+			margin-top: 2rem;
+			font-size: 3rem;
+		}
+	</style>
+	<body>
+		<Header />
+			<main>
+				<h1>👋 Bienvenue sur mon blog !</h1>
+
+				<p>Je suis un <strong>développeur fullstack junior</strong>, 
+					passionné par la création de solutions qui apportent de la valeur. 
+				</p>
+
+				<p>🛠️ <strong>Mes domaines d'exploration :</strong></p>
+				<ul>
+					<li><strong>Backend :</strong> C#/.NET (APIs, microservices, clean architecture)</li>
+					<li><strong>Infra & DevOps :</strong> Déploiement et monitoring sur VPS</li>
+					<li><strong>Frontend :</strong> Astro, Nuxt, Flutter pour des interfaces efficaces</li>
+					<li><strong>IA :</strong> Outils et techniques pour des projets intelligents</li>
+				</ul>
+
+				<p>📝 <strong>Ce que tu trouveras ici :</strong></p>
+				<ul>
+					<li>✅ <strong>Projets documentés</strong> en temps réel (succès comme échecs)</li>
+					<li>📚 <strong>Tutoriels</strong> sur C#, .NET, infra et automatisation</li>
+					<li>🔄 <strong>Retours d'expérience</strong> concrets (ex: "Pourquoi j'ai abandonné X")</li>
+				</ul>
+
+				<p>→ <strong>L'objectif ?</strong> Apprendre en public, progresser en retranscrivant mes expériences, et peut-être t'inspirer !</p>
+			</main>
+
+		<Footer />
+	</body>
+</html>

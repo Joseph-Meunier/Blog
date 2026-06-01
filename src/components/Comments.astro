@@ -1,0 +1,100 @@
+---
+// Comments component using Utterances (GitHub Issues as backend)
+// Documentation: https://utteranc.es/
+interface Props {
+	repo: string;
+	issueTerm?: 'pathname' | 'url' | 'title' | 'og:title';
+	label?: string;
+}
+
+const {
+	repo,
+	issueTerm = 'pathname',
+	label = ''
+} = Astro.props;
+---
+
+<div class="comments-section">
+	<h2>Commentaires</h2>
+	<div class="utterances-container" id="comments"></div>
+</div>
+
+<script define:vars={{ repo, issueTerm, label }}>
+(function() {
+	function getTheme() {
+		const theme = document.documentElement.getAttribute('data-theme');
+		return theme === 'dark' ? 'github-dark' : 'github-light';
+	}
+
+	function loadUtterances() {
+		const script = document.createElement('script');
+		script.src = 'https://utteranc.es/client.js';
+		script.setAttribute('repo', repo);
+		script.setAttribute('issue-term', issueTerm);
+		if (label) script.setAttribute('label', label);
+		script.setAttribute('theme', getTheme());
+		script.setAttribute('crossorigin', 'anonymous');
+		script.async = true;
+		
+		const container = document.getElementById('comments');
+		if (container) {
+			container.appendChild(script);
+		}
+	}
+
+	function updateUtterancesTheme() {
+		const theme = getTheme();
+		const iframe = document.querySelector('.utterances-frame');
+		if (iframe && iframe.contentWindow) {
+			const message = {
+				type: 'set-theme',
+				theme: theme
+			};
+			iframe.contentWindow.postMessage(message, 'https://utteranc.es');
+		}
+	}
+
+	// Load Utterances with initial theme
+	loadUtterances();
+
+	// Watch for theme changes
+	const observer = new MutationObserver(function(mutations) {
+		mutations.forEach(function(mutation) {
+			if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+				updateUtterancesTheme();
+			}
+		});
+	});
+
+	observer.observe(document.documentElement, {
+		attributes: true,
+		attributeFilter: ['data-theme']
+	});
+})();
+</script>
+
+<style>
+	.comments-section {
+		width: 720px;
+		max-width: calc(100% - 2em);
+		margin: 2rem auto;
+		padding: 2rem 1em;
+		border-top: 2px solid rgba(var(--gray-light), 0.3);
+	}
+
+	.comments-section h2 {
+		margin-bottom: 1.5rem;
+		color: rgb(var(--gray-dark));
+		font-size: 1.75rem;
+		text-align: center;
+	}
+
+	.utterances-container {
+		margin: 0 auto;
+	}
+
+	/* Ensure proper spacing for the utterances widget */
+	.utterances {
+		max-width: 100%;
+	}
+</style>

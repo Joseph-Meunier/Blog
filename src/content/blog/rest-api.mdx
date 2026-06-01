@@ -1,0 +1,142 @@
+---
+title: 'API REST'
+description: "C'est quoi une API REST?"
+startDate: '2025-06-12'
+pubDate: '2025-06-12'
+updatedDate: '2025-06-22'
+heroImage: '../../assets/articles/rest-api/hero.webp'
+isPublished: true
+readingTime: '5 à 7 minutes'
+---
+
+## C'est quoi une API REST?
+
+Une **API REST** (pour *Representational State Transfer*) est un style d'architecture d'API (pour *Application Programming Interface*). 
+
+Elle permet de structurer la manipulation de **ressources** (données) via des **URLs** bien définies, en utilisant des **verbes HTTP**.
+
+### Table des matières
+
+- [Les principes de REST](#les-principes-de-rest)
+- [Exemple : SWAPI](#exemple-swapi)
+- [Verbes HTTP](#verbes-http)
+- [Format de réponse](#format-de-reponse)
+- [En résumé](#en-resume)
+
+### Les principes de REST
+
+REST repose sur 5 contraintes architecturales et une facultative. Les respecter rend une API "RESTful" :
+
+#### 1. **Client-Serveur**
+
+  - Le client et le serveur sont séparés.
+
+  - Le client ne connaît que l’URI de la ressource, pas la logique métier ou la base de données du serveur.
+
+#### 2. **Sans état (Stateless)**
+
+  - Chaque requête contient toutes les informations nécessaires à son traitement.
+
+  - Le serveur ne stocke aucun état de session entre les requêtes.
+
+#### 3. **Cacheable**
+
+  - Les réponses doivent indiquer si elles sont cachable ou non, afin de réduire les appels réseau.
+
+  - Cela améliore les performances côté client.
+
+#### 4. **Interface uniforme**
+
+  - Tous les échanges passent par une interface standardisée : les méthodes HTTP (GET, POST, etc.) 
+    [(voir Verbes HTTP)](#verbes-http), les ressources sont identifiées de manière unique par des URLs.
+    (Les ressources représentent les entités manipulées par l’API (ex. : films, personnages, vaisseaux)), 
+    les statuts de réponse HTTP [(voir Les statuts de réponse HTTP)](#les-statuts-de-reponse-http).
+
+#### 5. **Système en couches (Layered System)**
+
+  - L’architecture peut être composée de plusieurs couches (ex. : proxy, passerelle, serveur d’authentification), sans que le client ait conscience de cette complexité.
+
+#### 6. **Code à la demande (facultatif)**
+
+  - Le serveur peut transmettre du code exécutable (comme du JavaScript) au client, qui l’exécutera dynamiquement.
+
+  - Ce n’est pas obligatoire pour qu’une API soit RESTful.
+
+
+### Exemple : SWAPI
+
+Prenons l'exemple de l'API [SWAPI](https://swapi.info/), une API publique qui fournit des données de l'univers Star Wars.
+Voici une URL typique : https://swapi.info/api/films.
+
+#### Décomposons cette URL :
+
+- **https** : Le protocole utilisé est `HTTPS` (HyperText Transfer Protocol Secure). 
+Il permet la communication entre un client et un serveur, avec une couche de sécurité (chiffrement).
+- **://** : Ce séparateur suit immédiatement le protocole et précède le nom de domaine.
+- **swapi.info** : C'est le nom de domaine du serveur qui héberge l'API.
+- **/api** : Cela indique que nous entrons dans la partie "API" du site. Ce préfixe est une convention couramment utilisée mais pas obligatoire en REST.
+- **/films** : Cette partie de l'URL est la ressource cible. Ici, nous voulons accéder aux films de Star Wars.
+
+La combinaison de cette URL permet d'accéder, via un navigateur ou une requête HTTP, à la liste des films disponibles.
+
+### Verbes HTTP
+
+Une API REST s'appuie sur l'utilisation de **verbes HTTP**, qui indiquent l'action que nous voulons effectuer :
+
+- **GET** : Lire une ressource (par exemple, récupérer la liste des films).
+- **POST** : Créer une nouvelle ressource (par exemple, ajouter un acteur).
+- **PUT** : Remplacer une ressource existante par une nouvelle version (par exemple, mettre à jour un film).
+- **PATCH** : Mettre à jour partiellement une ressource (ex. : changer uniquement le nom d’un acteur).
+- **DELETE** : Supprimer une ressource.
+
+![Description des verbes HTTP](../../assets/articles/rest-api/schema.webp)
+
+Dans notre exemple :
+
+```http
+GET https://swapi.info/api/films
+```
+
+Cela signifie : "Je veux récupérer (GET) tous les films disponibles de SWAPI."
+
+### Format de réponse
+
+Les APIs REST retournent souvent des réponses au format JSON. Voici un exemple simplifié de réponse que vous pourriez obtenir :
+
+```json
+{
+  "count": 6,
+  "results": [
+    {
+      "title": "A New Hope",
+      "episode_id": 4,
+      "release_date": "1977-05-25"
+    },
+    ...
+  ]
+}
+```
+
+Ce format est facilement lisible par les programmes et peut être utilisé pour afficher des données dans une application ou un site web.
+
+### Les statuts de réponse HTTP
+
+Les réponses des appels API sont systématiquement accompagnées d'un statut HTTP qui indique le succès ou l'échec de la requête.
+
+Voici les statuts les plus courants :
+
+- **200 OK** : La requête a été traitée avec succès.
+- **201 Created** : La ressource a été créée avec succès.
+- **204 No Content** : La requête a été traitée avec succès mais ne retourne pas de contenu.
+- **400 Bad Request** : La requête est invalide.
+- **401 Unauthorized** : L'utilisateur n'est pas autorisé à accéder à la ressource.
+- **403 Forbidden** : Authentifié mais pas autorisé.
+- **404 Not Found** : Ressource non trouvée.
+- **500 Internal Server Error** : Erreur côté serveur.
+
+### En résumé
+
+Une API REST utilise des URLs claires et des verbes HTTP pour permettre la manipulation de ressources. 
+Grâce à ce fonctionnement simple et standardisé, elle facilite les échanges entre systèmes informatiques. 
+Que vous soyez développeur web ou mobile, savoir consommer une API REST est une compétence fondamentale !
+
