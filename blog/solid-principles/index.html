@@ -1,0 +1,382 @@
+<!DOCTYPE html><html lang="en" data-astro-cid-bvzihdzo> <head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><!-- Script pour éviter le flash de contenu non stylisé (FOUC) - Inline direct --><script>
+(function () {
+	try {
+		const storageKey = 'theme';
+		const getPreferredTheme = () => {
+			const stored = typeof localStorage !== 'undefined' ? localStorage.getItem(storageKey) : null;
+			if (stored === 'light' || stored === 'dark') return stored;
+			if (typeof window !== 'undefined' && window.matchMedia) {
+				return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+			}
+			return 'dark';
+		};
+		const theme = getPreferredTheme();
+		document.documentElement.setAttribute('data-theme', theme);
+	} catch (_) {
+		document.documentElement.setAttribute('data-theme', 'dark');
+	}
+})();
+</script><!-- Security Headers via Meta Tags --><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://giscus.app; style-src 'self' 'unsafe-inline'; img-src 'self' https://avatars.githubusercontent.com https://github.githubassets.com; font-src 'self'; connect-src 'self' https://giscus.app; frame-src https://giscus.app; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"><meta http-equiv="X-Content-Type-Options" content="nosniff"><meta http-equiv="X-Frame-Options" content="DENY"><meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin"><meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()"><link rel="icon" type="image/svg+xml" href="/Blog/favicon.ico"><link rel="sitemap" href="/Blog/sitemap-index.xml"><link rel="alternate" type="application/rss+xml" title="Gaston De Sade" href="https://joseph-meunier.github.io/Blog/rss.xml"><meta name="generator" content="Astro v5.16.4"><!-- Font preloads --><link rel="preload" href="/Blog/fonts/atkinson-regular.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/Blog/fonts/atkinson-bold.woff" as="font" type="font/woff" crossorigin><!-- Canonical URL --><link rel="canonical" href="https://joseph-meunier.github.io/Blog/blog/solid-principles/"><!-- Primary Meta Tags --><title>Principes SOLID et KISS</title><meta name="title" content="Principes SOLID et KISS"><meta name="description" content="Quels sont les principes SOLID et KISS ?"><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://joseph-meunier.github.io/Blog/blog/solid-principles/"><meta property="og:title" content="Principes SOLID et KISS"><meta property="og:description" content="Quels sont les principes SOLID et KISS ?"><meta property="og:image" content="https://joseph-meunier.github.io/Blog/assets/fallbackImage.CfdTb-bN.webp"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://joseph-meunier.github.io/Blog/blog/solid-principles/"><meta property="twitter:title" content="Principes SOLID et KISS"><meta property="twitter:description" content="Quels sont les principes SOLID et KISS ?"><meta property="twitter:image" content="https://joseph-meunier.github.io/Blog/assets/fallbackImage.CfdTb-bN.webp"><link rel="stylesheet" href="/Blog/assets/_slug_.DV5wic_b.css">
+<style>.comments-section[data-astro-cid-jvxsf75u]{width:720px;max-width:calc(100% - 2em);margin:2rem auto;padding:2rem 1em;border-top:2px solid rgba(var(--gray-light),.3)}.comments-section[data-astro-cid-jvxsf75u] h2[data-astro-cid-jvxsf75u]{margin-bottom:1.5rem;color:rgb(var(--gray-dark));font-size:1.75rem;text-align:center}.utterances-container[data-astro-cid-jvxsf75u]{margin:0 auto}.utterances[data-astro-cid-jvxsf75u]{max-width:100%}main[data-astro-cid-bvzihdzo]{width:calc(100% - 2em);max-width:100%;margin:0}.hero-image[data-astro-cid-bvzihdzo]{width:100%}.hero-image[data-astro-cid-bvzihdzo] img[data-astro-cid-bvzihdzo]{display:block;margin:0 auto;border-radius:12px;box-shadow:var(--box-shadow)}.prose[data-astro-cid-bvzihdzo]{width:720px;max-width:calc(100% - 2em);margin:auto;padding:1em;color:rgb(var(--gray-dark))}.prose[data-astro-cid-bvzihdzo] pre[data-astro-cid-bvzihdzo]{background:#1e1e1e;border-radius:8px;padding:1rem;margin:1.5rem 0;overflow-x:auto;border:1px solid #333}.prose[data-astro-cid-bvzihdzo] code[data-astro-cid-bvzihdzo]{background:#f1f1f1;padding:.2rem .4rem;border-radius:4px;font-size:.9em;color:#d63384}.prose[data-astro-cid-bvzihdzo] pre[data-astro-cid-bvzihdzo] code[data-astro-cid-bvzihdzo]{background:transparent;padding:0;color:inherit;font-size:.9rem;line-height:1.5}.title[data-astro-cid-bvzihdzo]{margin-bottom:1em;padding:1em 0;text-align:center;line-height:1}.title[data-astro-cid-bvzihdzo] h1[data-astro-cid-bvzihdzo]{margin:0 0 .5em}.date[data-astro-cid-bvzihdzo]{margin-bottom:.5em;color:rgb(var(--gray));display:grid}.date-2cards[data-astro-cid-bvzihdzo]{grid-template-columns:1fr 1fr}.date-3cards[data-astro-cid-bvzihdzo]{grid-template-columns:1fr 1fr 1fr}.date-card[data-astro-cid-bvzihdzo]{background:#fff;border-radius:12px;padding:1.5rem;box-shadow:0 4px 6px #0000000d,0 1px 3px #0000001a;border:1px solid rgba(var(--gray-light),.2);transition:all .3s ease;text-align:center}.date-card[data-astro-cid-bvzihdzo]:hover{transform:translateY(-4px);box-shadow:0 12px 24px #0000001a,0 4px 8px #0000000d}.date-card[data-astro-cid-bvzihdzo].startwrite{border-top:4px solid #FECA3D}.date-card[data-astro-cid-bvzihdzo].update{border-top:4px solid #10b981}.date-card[data-astro-cid-bvzihdzo]:not(.update):not(.startwrite){border-top:4px solid var(--accent)}.date-card-icon[data-astro-cid-bvzihdzo]{font-size:2rem;margin-bottom:.5rem;display:block}.date-card-title[data-astro-cid-bvzihdzo]{font-weight:600;color:#000;margin-bottom:.5rem;font-size:.9rem;text-transform:uppercase;letter-spacing:.5px}.date-card-value[data-astro-cid-bvzihdzo]{font-size:1.1rem;font-weight:500;color:var(--accent)}.date-card[data-astro-cid-bvzihdzo].startwrite .date-card-value[data-astro-cid-bvzihdzo]{color:#feca3d}.date-card[data-astro-cid-bvzihdzo].update .date-card-value[data-astro-cid-bvzihdzo]{color:#10b981}.last-updated-on[data-astro-cid-bvzihdzo]{font-style:italic}
+</style></head> <body data-astro-cid-bvzihdzo> <header data-astro-cid-3ef6ksr2> <nav data-astro-cid-3ef6ksr2> <h2 data-astro-cid-3ef6ksr2><a href="/Blog" data-astro-cid-3ef6ksr2>Gaston De Sade</a></h2> <div class="internal-links" data-astro-cid-3ef6ksr2> <a href="/Blog" data-astro-cid-3ef6ksr2="true" data-astro-cid-eimmu3lg> Accueil </a>  <a href="/Blog/blog" class="active" data-astro-cid-3ef6ksr2="true" data-astro-cid-eimmu3lg> Blog </a>   </div> <div class="social-links" data-astro-cid-3ef6ksr2> <!-- 
+			<a href="https://m.webtoo.ls/@astro" target="_blank">
+				<span class="sr-only">Follow Astro on Mastodon</span>
+				<svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32"
+					><path
+						fill="currentColor"
+						d="M11.19 12.195c2.016-.24 3.77-1.475 3.99-2.603.348-1.778.32-4.339.32-4.339 0-3.47-2.286-4.488-2.286-4.488C12.062.238 10.083.017 8.027 0h-.05C5.92.017 3.942.238 2.79.765c0 0-2.285 1.017-2.285 4.488l-.002.662c-.004.64-.007 1.35.011 2.091.083 3.394.626 6.74 3.78 7.57 1.454.383 2.703.463 3.709.408 1.823-.1 2.847-.647 2.847-.647l-.06-1.317s-1.303.41-2.767.36c-1.45-.05-2.98-.156-3.215-1.928a3.614 3.614 0 0 1-.033-.496s1.424.346 3.228.428c1.103.05 2.137-.064 3.188-.189zm1.613-2.47H11.13v-4.08c0-.859-.364-1.295-1.091-1.295-.804 0-1.207.517-1.207 1.541v2.233H7.168V5.89c0-1.024-.403-1.541-1.207-1.541-.727 0-1.091.436-1.091 1.296v4.079H3.197V5.522c0-.859.22-1.541.66-2.046.456-.505 1.052-.764 1.793-.764.856 0 1.504.328 1.933.983L8 4.39l.417-.695c.429-.655 1.077-.983 1.934-.983.74 0 1.336.259 1.791.764.442.505.661 1.187.661 2.046v4.203z"
+					></path></svg
+				>
+			</a>
+			<a href="https://twitter.com/astrodotbuild" target="_blank">
+				<span class="sr-only">Follow Astro on Twitter</span>
+				<svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32"
+					><path
+						fill="currentColor"
+						d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057 3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15z"
+					></path></svg
+				>
+			</a>
+			--> <button id="theme-toggle" aria-label="Toggle dark mode" data-astro-cid-3ef6ksr2> <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-3ef6ksr2> <circle cx="12" cy="12" r="5" data-astro-cid-3ef6ksr2></circle> <line x1="12" y1="1" x2="12" y2="3" data-astro-cid-3ef6ksr2></line> <line x1="12" y1="21" x2="12" y2="23" data-astro-cid-3ef6ksr2></line> <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" data-astro-cid-3ef6ksr2></line> <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" data-astro-cid-3ef6ksr2></line> <line x1="1" y1="12" x2="3" y2="12" data-astro-cid-3ef6ksr2></line> <line x1="21" y1="12" x2="23" y2="12" data-astro-cid-3ef6ksr2></line> <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" data-astro-cid-3ef6ksr2></line> <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" data-astro-cid-3ef6ksr2></line> </svg> <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-3ef6ksr2> <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" data-astro-cid-3ef6ksr2></path> </svg> </button> <a href="https://github.com/Joseph-Meunier" target="_blank"> <span class="sr-only">Go to my github</span> <svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg> </a> </div> </nav> </header> <script type="module">(function(){const e="theme";function n(){try{const t=localStorage.getItem(e);if(t==="light"||t==="dark")return t}catch{}return document.documentElement.getAttribute("data-theme")||"dark"}function c(){document.documentElement.setAttribute("data-theme","dark");try{localStorage.setItem(e,"dark")}catch{}}function o(){document.documentElement.setAttribute("data-theme","light");try{localStorage.setItem(e,"light")}catch{}}function a(){n()==="dark"?o():c()}n()==="dark"?c():o();const r=document.getElementById("theme-toggle");r&&r.addEventListener("click",a)})();</script>  <main data-astro-cid-bvzihdzo> <article data-astro-cid-bvzihdzo> <div class="hero-image" data-astro-cid-bvzihdzo> <img src="/Blog/assets/hero.C9yy_hYH_1FEtV2.webp" alt data-astro-cid-bvzihdzo="true" loading="lazy" decoding="async" fetchpriority="auto" width="1020" height="510"> </div> <div class="prose" data-astro-cid-bvzihdzo> <div class="title" data-astro-cid-bvzihdzo> <div class="date date-3cards" data-astro-cid-bvzihdzo> <div class="date-card startwrite" data-astro-cid-bvzihdzo> <span class="date-card-icon" data-astro-cid-bvzihdzo>✍️</span> <div class="date-card-title" data-astro-cid-bvzihdzo>Ecrit le</div> <div class="date-card-value" data-astro-cid-bvzihdzo> <time datetime="2025-06-20T00:00:00.000Z"> 20 juin 2025 </time> </div> </div> <div class="date-card" data-astro-cid-bvzihdzo> <span class="date-card-icon" data-astro-cid-bvzihdzo>📅</span> <div class="date-card-title" data-astro-cid-bvzihdzo>Publié le</div> <div class="date-card-value" data-astro-cid-bvzihdzo> <time datetime="2025-06-20T00:00:00.000Z"> 20 juin 2025 </time> </div> </div> <div class="date-card update" data-astro-cid-bvzihdzo> <span class="date-card-icon" data-astro-cid-bvzihdzo>🔄</span> <div class="date-card-title" data-astro-cid-bvzihdzo>Mis à jour le</div> <div class="date-card-value" data-astro-cid-bvzihdzo> <time datetime="2025-06-22T00:00:00.000Z"> 22 juin 2025 </time> </div> </div> </div> <h1 data-astro-cid-bvzihdzo>Principes SOLID et KISS</h1> <p data-astro-cid-bvzihdzo>Temps de lecture : <i data-astro-cid-bvzihdzo>6 à 8 minutes</i></p>  <hr data-astro-cid-bvzihdzo> </div>  <h2 id="quels-sont-les-principes-solid">Quels sont les principes SOLID ?</h2>
+<p>Les <strong>principes SOLID</strong> sont un ensemble de cinq principes de conception qui aident les développeurs à créer des logiciels maintenables, évolutifs et robustes.</p>
+<p>Ils ont été introduits par Robert C. Martin et sont largement utilisés en programmation orientée objet.</p>
+<h2 id="table-des-matières">Table des matières</h2>
+<ul>
+<li><a href="#quels-sont-les-principes-solid">Quels sont les principes SOLID ?</a></li>
+<li><a href="#table-des-mati%C3%A8res">Table des matières</a></li>
+<li><a href="#solid">SOLID</a></li>
+<li><a href="#s---principe-de-responsabilit%C3%A9-unique">S - Principe de Responsabilité Unique</a></li>
+<li><a href="#o---principe-ouvertferm%C3%A9">O - Principe Ouvert/Fermé</a></li>
+<li><a href="#l---principe-de-substitution-de-liskov">L - Principe de Substitution de Liskov</a></li>
+<li><a href="#i---principe-de-s%C3%A9gr%C3%A9gation-des-interfaces">I - Principe de Ségrégation des Interfaces</a></li>
+<li><a href="#d---principe-dinversion-des-d%C3%A9pendances">D - Principe d’Inversion des Dépendances</a></li>
+<li><a href="#principe-kiss">Principe KISS</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+<li><a href="#quiz">Quiz</a></li>
+</ul>
+<h2 id="solid">SOLID</h2>
+<h3 id="s---principe-de-responsabilité-unique">S - Principe de Responsabilité Unique</h3>
+<p>Une classe doit avoir une seule raison de changer, c’est-à-dire être responsable d’un seul acteur métier.</p>
+<p>Par exemple, la classe Animal devrait uniquement gérer l’état et le comportement d’un animal.
+Les opérations liées à la tonte (UseClippers) doivent être gérées ailleurs (ex. AnimalCareService).</p>
+<p>❌<strong>Mauvais exemple :</strong></p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf;overflow-x:auto" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#C678DD">public</span><span style="color:#C678DD"> class</span><span style="color:#E5C07B"> Animal</span><span style="color:#ABB2BF"> {</span></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#C678DD"> string</span><span style="color:#ABB2BF"> Name { </span><span style="color:#C678DD">get</span><span style="color:#ABB2BF">; </span><span style="color:#C678DD">set</span><span style="color:#ABB2BF">; }</span></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#C678DD"> int</span><span style="color:#ABB2BF"> Age { </span><span style="color:#C678DD">get</span><span style="color:#ABB2BF">; </span><span style="color:#C678DD">set</span><span style="color:#ABB2BF">; }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#C678DD"> void</span><span style="color:#61AFEF"> Eat</span><span style="color:#ABB2BF">() {</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic">        // ...</span></span>
+<span class="line"><span style="color:#ABB2BF">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#C678DD"> void</span><span style="color:#61AFEF"> Sleep</span><span style="color:#ABB2BF">() {</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic">        // ...</span></span>
+<span class="line"><span style="color:#ABB2BF">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#C678DD"> void</span><span style="color:#61AFEF"> UseClippers</span><span style="color:#ABB2BF">() {</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic">        // ...</span></span>
+<span class="line"><span style="color:#ABB2BF">    }</span></span>
+<span class="line"><span style="color:#ABB2BF">}</span></span></code></pre>
+<p>✅<strong>Bon exemple :</strong></p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf;overflow-x:auto" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#C678DD">public</span><span style="color:#C678DD"> class</span><span style="color:#E5C07B"> Animal</span><span style="color:#ABB2BF"> {</span></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#C678DD"> string</span><span style="color:#ABB2BF"> Name { </span><span style="color:#C678DD">get</span><span style="color:#ABB2BF">; </span><span style="color:#C678DD">set</span><span style="color:#ABB2BF">; }</span></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#C678DD"> int</span><span style="color:#ABB2BF"> Age { </span><span style="color:#C678DD">get</span><span style="color:#ABB2BF">; </span><span style="color:#C678DD">set</span><span style="color:#ABB2BF">; }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#C678DD"> void</span><span style="color:#61AFEF"> Eat</span><span style="color:#ABB2BF">() {</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic">        // ...</span></span>
+<span class="line"><span style="color:#ABB2BF">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#C678DD"> void</span><span style="color:#61AFEF"> Sleep</span><span style="color:#ABB2BF">() {</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic">        // ...</span></span>
+<span class="line"><span style="color:#ABB2BF">    }</span></span>
+<span class="line"><span style="color:#ABB2BF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">public</span><span style="color:#C678DD"> class</span><span style="color:#E5C07B"> AnimalCareService</span><span style="color:#ABB2BF"> {</span></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#C678DD"> void</span><span style="color:#61AFEF"> UseClippers</span><span style="color:#ABB2BF">(</span><span style="color:#E5C07B">Animal</span><span style="color:#E5C07B"> animal</span><span style="color:#ABB2BF">) {</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic">        // ...</span></span>
+<span class="line"><span style="color:#ABB2BF">    }</span></span>
+<span class="line"><span style="color:#ABB2BF">}</span></span></code></pre>
+<h3 id="o---principe-ouvertfermé">O - Principe Ouvert/Fermé</h3>
+<p>Une classe devrait être ouverte à l’extension mais fermée à la modification.
+Vous devez pouvoir ajouter de nouvelles fonctionnalités à une classe sans modifier le code existant.</p>
+<p>Par exemple, avec la classe animal, au lieu d’avoir une méthode <code>MakeSound</code> avec un paramètre <code>string typeSound</code> comme ceci :</p>
+<p>❌<strong>Mauvais exemple :</strong></p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf;overflow-x:auto" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#C678DD">class</span><span style="color:#E5C07B"> Animal</span><span style="color:#ABB2BF"> {</span></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#C678DD"> string</span><span style="color:#ABB2BF"> Name { </span><span style="color:#C678DD">get</span><span style="color:#ABB2BF">; </span><span style="color:#C678DD">set</span><span style="color:#ABB2BF">; }</span></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#C678DD"> int</span><span style="color:#ABB2BF"> Age { </span><span style="color:#C678DD">get</span><span style="color:#ABB2BF">; </span><span style="color:#C678DD">set</span><span style="color:#ABB2BF">; }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#C678DD"> void</span><span style="color:#61AFEF"> MakeSound</span><span style="color:#ABB2BF">(</span><span style="color:#C678DD">string</span><span style="color:#E5C07B"> typeSound</span><span style="color:#ABB2BF">) {</span></span>
+<span class="line"><span style="color:#C678DD">        if</span><span style="color:#ABB2BF"> (</span><span style="color:#E06C75">typeSound</span><span style="color:#56B6C2"> ==</span><span style="color:#98C379"> &quot;bark&quot;</span><span style="color:#ABB2BF">) {</span></span>
+<span class="line"><span style="color:#E5C07B">            Console</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">WriteLine</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">$&quot;</span><span style="color:#ABB2BF">{</span><span style="color:#E06C75">Name</span><span style="color:#ABB2BF">}</span><span style="color:#98C379"> aboie&quot;</span><span style="color:#ABB2BF">);</span></span>
+<span class="line"><span style="color:#ABB2BF">        } </span><span style="color:#C678DD">else</span><span style="color:#C678DD"> if</span><span style="color:#ABB2BF"> (</span><span style="color:#E06C75">typeSound</span><span style="color:#56B6C2"> ==</span><span style="color:#98C379"> &quot;meow&quot;</span><span style="color:#ABB2BF">) {</span></span>
+<span class="line"><span style="color:#E5C07B">            Console</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">WriteLine</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">$&quot;</span><span style="color:#ABB2BF">{</span><span style="color:#E06C75">Name</span><span style="color:#ABB2BF">}</span><span style="color:#98C379"> miaule&quot;</span><span style="color:#ABB2BF">);</span></span>
+<span class="line"><span style="color:#ABB2BF">        }</span></span>
+<span class="line"><span style="color:#ABB2BF">    }</span></span>
+<span class="line"><span style="color:#ABB2BF">}</span></span></code></pre>
+<p>✅<strong>Bon exemple :</strong>
+Nous pouvons <a href="../object-oriented-programming#abstraction">abstraire</a> la classe <code>Animal</code> comme ceci :</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf;overflow-x:auto" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#C678DD">public</span><span style="color:#C678DD"> abstract</span><span style="color:#C678DD"> class</span><span style="color:#E5C07B"> Animal</span><span style="color:#ABB2BF"> {</span></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#C678DD"> string</span><span style="color:#ABB2BF"> Name { </span><span style="color:#C678DD">get</span><span style="color:#ABB2BF">; </span><span style="color:#C678DD">set</span><span style="color:#ABB2BF">; }</span></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#C678DD"> int</span><span style="color:#ABB2BF"> Age { </span><span style="color:#C678DD">get</span><span style="color:#ABB2BF">; </span><span style="color:#C678DD">set</span><span style="color:#ABB2BF">; }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#C678DD"> abstract</span><span style="color:#C678DD"> void</span><span style="color:#61AFEF"> MakeSound</span><span style="color:#ABB2BF">();</span></span>
+<span class="line"><span style="color:#ABB2BF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">public</span><span style="color:#C678DD"> class</span><span style="color:#E5C07B"> Dog</span><span style="color:#ABB2BF"> : </span><span style="color:#E5C07B">Animal</span><span style="color:#ABB2BF"> {</span></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#C678DD"> override</span><span style="color:#C678DD"> void</span><span style="color:#61AFEF"> MakeSound</span><span style="color:#ABB2BF">() {</span></span>
+<span class="line"><span style="color:#E5C07B">        Console</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">WriteLine</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">$&quot;</span><span style="color:#ABB2BF">{</span><span style="color:#E06C75">Name</span><span style="color:#ABB2BF">}</span><span style="color:#98C379"> aboie&quot;</span><span style="color:#ABB2BF">);</span></span>
+<span class="line"><span style="color:#ABB2BF">    }</span></span>
+<span class="line"><span style="color:#ABB2BF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">public</span><span style="color:#C678DD"> class</span><span style="color:#E5C07B"> Cat</span><span style="color:#ABB2BF"> : </span><span style="color:#E5C07B">Animal</span><span style="color:#ABB2BF"> {</span></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#C678DD"> override</span><span style="color:#C678DD"> void</span><span style="color:#61AFEF"> MakeSound</span><span style="color:#ABB2BF">() {</span></span>
+<span class="line"><span style="color:#E5C07B">        Console</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">WriteLine</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">$&quot;</span><span style="color:#ABB2BF">{</span><span style="color:#E06C75">Name</span><span style="color:#ABB2BF">}</span><span style="color:#98C379"> miaule&quot;</span><span style="color:#ABB2BF">);</span></span>
+<span class="line"><span style="color:#ABB2BF">    }</span></span>
+<span class="line"><span style="color:#ABB2BF">}</span></span></code></pre>
+<p>Maintenant nous pouvons ajouter un nouveau type d’animal sans modifier le code existant.</p>
+<h3 id="l---principe-de-substitution-de-liskov">L - Principe de Substitution de Liskov</h3>
+<p>Les objets d’une superclasse devraient être remplaçables par des objets d’une sous-classe sans affecter la justesse du programme.</p>
+<p>Si nous prenons l’exemple de la classe <code>Animal</code>, nous pouvons voir que les classes <code>Dog</code> et <code>Cat</code> sont substituables par la classe <code>Animal</code>.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf;overflow-x:auto" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#C678DD">public</span><span style="color:#C678DD"> abstract</span><span style="color:#C678DD"> class</span><span style="color:#E5C07B"> Animal</span><span style="color:#ABB2BF"> {</span></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#C678DD"> string</span><span style="color:#ABB2BF"> Name { </span><span style="color:#C678DD">get</span><span style="color:#ABB2BF">; </span><span style="color:#C678DD">set</span><span style="color:#ABB2BF">; }</span></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#C678DD"> int</span><span style="color:#ABB2BF"> Age { </span><span style="color:#C678DD">get</span><span style="color:#ABB2BF">; </span><span style="color:#C678DD">set</span><span style="color:#ABB2BF">; }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#C678DD"> abstract</span><span style="color:#C678DD"> void</span><span style="color:#61AFEF"> Eat</span><span style="color:#ABB2BF">();</span></span>
+<span class="line"><span style="color:#ABB2BF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">public</span><span style="color:#C678DD"> class</span><span style="color:#E5C07B"> Dog</span><span style="color:#ABB2BF"> : </span><span style="color:#E5C07B">Animal</span><span style="color:#ABB2BF"> {</span></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#C678DD"> override</span><span style="color:#C678DD"> void</span><span style="color:#61AFEF"> Eat</span><span style="color:#ABB2BF">() {</span></span>
+<span class="line"><span style="color:#E5C07B">        Console</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">WriteLine</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">&quot;Le chien mange&quot;</span><span style="color:#ABB2BF">);</span></span>
+<span class="line"><span style="color:#ABB2BF">    }</span></span>
+<span class="line"><span style="color:#ABB2BF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">public</span><span style="color:#C678DD"> class</span><span style="color:#E5C07B"> Cat</span><span style="color:#ABB2BF"> : </span><span style="color:#E5C07B">Animal</span><span style="color:#ABB2BF"> {</span></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#C678DD"> override</span><span style="color:#C678DD"> void</span><span style="color:#61AFEF"> Eat</span><span style="color:#ABB2BF">() {</span></span>
+<span class="line"><span style="color:#E5C07B">        Console</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">WriteLine</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">&quot;Le chat mange&quot;</span><span style="color:#ABB2BF">);</span></span>
+<span class="line"><span style="color:#ABB2BF">    }</span></span>
+<span class="line"><span style="color:#ABB2BF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">public</span><span style="color:#C678DD"> class</span><span style="color:#E5C07B"> AnimalFeeder</span><span style="color:#ABB2BF"> {</span></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#C678DD"> void</span><span style="color:#61AFEF"> Feed</span><span style="color:#ABB2BF">(</span><span style="color:#E5C07B">Animal</span><span style="color:#E5C07B"> animal</span><span style="color:#ABB2BF">) {</span></span>
+<span class="line"><span style="color:#E5C07B">        animal</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">Eat</span><span style="color:#ABB2BF">();</span></span>
+<span class="line"><span style="color:#ABB2BF">    }</span></span>
+<span class="line"><span style="color:#ABB2BF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">var</span><span style="color:#E06C75"> dog</span><span style="color:#56B6C2"> =</span><span style="color:#ABB2BF"> new </span><span style="color:#E5C07B">Dog</span><span style="color:#ABB2BF"> { </span><span style="color:#E06C75">Name</span><span style="color:#56B6C2"> =</span><span style="color:#98C379"> &quot;Rex&quot;</span><span style="color:#ABB2BF"> };</span></span>
+<span class="line"><span style="color:#C678DD">var</span><span style="color:#E06C75"> cat</span><span style="color:#56B6C2"> =</span><span style="color:#ABB2BF"> new </span><span style="color:#E5C07B">Cat</span><span style="color:#ABB2BF"> { </span><span style="color:#E06C75">Name</span><span style="color:#56B6C2"> =</span><span style="color:#98C379"> &quot;Mimi&quot;</span><span style="color:#ABB2BF"> };</span></span>
+<span class="line"><span style="color:#C678DD">var</span><span style="color:#E06C75"> feeder</span><span style="color:#56B6C2"> =</span><span style="color:#ABB2BF"> new </span><span style="color:#E5C07B">AnimalFeeder</span><span style="color:#ABB2BF">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E5C07B">feeder</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">Feed</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">dog</span><span style="color:#ABB2BF">); </span><span style="color:#7F848E;font-style:italic">// Le chien mange</span></span>
+<span class="line"><span style="color:#E5C07B">feeder</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">Feed</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">cat</span><span style="color:#ABB2BF">); </span><span style="color:#7F848E;font-style:italic">// Le chat mange</span></span></code></pre>
+<p>Les objets des sous-classes (Dog, Cat) doivent pouvoir remplacer ceux de la classe de base (Animal) sans modifier le comportement attendu du programme.</p>
+<h3 id="i---principe-de-ségrégation-des-interfaces">I - Principe de Ségrégation des Interfaces</h3>
+<p>Les clients ne devraient pas être forcés de dépendre d’interfaces qu’ils n’utilisent pas.</p>
+<p>❌<strong>Mauvais exemple :</strong>
+Une interface IAction trop large oblige les classes à implémenter des méthodes non pertinentes, comme Fly pour un chien.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf;overflow-x:auto" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#C678DD">public</span><span style="color:#C678DD"> interface</span><span style="color:#E5C07B"> IAction</span><span style="color:#ABB2BF">{</span></span>
+<span class="line"><span style="color:#C678DD">    void</span><span style="color:#61AFEF"> Eat</span><span style="color:#ABB2BF">();</span></span>
+<span class="line"><span style="color:#C678DD">    void</span><span style="color:#61AFEF"> Fly</span><span style="color:#ABB2BF">();</span></span>
+<span class="line"><span style="color:#C678DD">    void</span><span style="color:#61AFEF"> MakeSound</span><span style="color:#ABB2BF">();</span></span>
+<span class="line"><span style="color:#ABB2BF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">public</span><span style="color:#C678DD"> class</span><span style="color:#E5C07B"> Dog</span><span style="color:#ABB2BF"> : </span><span style="color:#E5C07B">IAction</span><span style="color:#ABB2BF"> {</span></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#C678DD"> void</span><span style="color:#61AFEF"> Eat</span><span style="color:#ABB2BF">() {</span></span>
+<span class="line"><span style="color:#E5C07B">        Console</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">WriteLine</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">&quot;Le chien mange&quot;</span><span style="color:#ABB2BF">);</span></span>
+<span class="line"><span style="color:#ABB2BF">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#C678DD"> void</span><span style="color:#61AFEF"> Fly</span><span style="color:#ABB2BF">() {</span></span>
+<span class="line"><span style="color:#C678DD">        throw</span><span style="color:#ABB2BF"> new </span><span style="color:#E5C07B">NotImplementedException</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">&quot;Les chiens ne peuvent pas voler&quot;</span><span style="color:#ABB2BF">);</span></span>
+<span class="line"><span style="color:#ABB2BF">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#C678DD"> void</span><span style="color:#61AFEF"> MakeSound</span><span style="color:#ABB2BF">() {</span></span>
+<span class="line"><span style="color:#E5C07B">        Console</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">WriteLine</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">&quot;Le chien aboie&quot;</span><span style="color:#ABB2BF">);</span></span>
+<span class="line"><span style="color:#ABB2BF">    }</span></span>
+<span class="line"><span style="color:#ABB2BF">}</span></span></code></pre>
+<p>La meilleure façon est de diviser l’interface en interfaces plus petites, comme ceci :</p>
+<p>✅<strong>Bon exemple :</strong></p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf;overflow-x:auto" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#C678DD">public</span><span style="color:#C678DD"> interface</span><span style="color:#E5C07B"> IEat</span><span style="color:#ABB2BF">{</span></span>
+<span class="line"><span style="color:#C678DD">    void</span><span style="color:#61AFEF"> Eat</span><span style="color:#ABB2BF">();</span></span>
+<span class="line"><span style="color:#ABB2BF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">public</span><span style="color:#C678DD"> interface</span><span style="color:#E5C07B"> IFly</span><span style="color:#ABB2BF">{</span></span>
+<span class="line"><span style="color:#C678DD">    void</span><span style="color:#61AFEF"> Fly</span><span style="color:#ABB2BF">();</span></span>
+<span class="line"><span style="color:#ABB2BF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">public</span><span style="color:#C678DD"> interface</span><span style="color:#E5C07B"> IMakeSound</span><span style="color:#ABB2BF">{</span></span>
+<span class="line"><span style="color:#C678DD">    void</span><span style="color:#61AFEF"> MakeSound</span><span style="color:#ABB2BF">();</span></span>
+<span class="line"><span style="color:#ABB2BF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">public</span><span style="color:#C678DD"> class</span><span style="color:#E5C07B"> Dog</span><span style="color:#ABB2BF"> : </span><span style="color:#E5C07B">IEat</span><span style="color:#ABB2BF">, </span><span style="color:#E5C07B">IMakeSound</span><span style="color:#ABB2BF"> {</span></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#C678DD"> void</span><span style="color:#61AFEF"> Eat</span><span style="color:#ABB2BF">() {</span></span>
+<span class="line"><span style="color:#E5C07B">        Console</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">WriteLine</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">&quot;Le chien mange&quot;</span><span style="color:#ABB2BF">);</span></span>
+<span class="line"><span style="color:#ABB2BF">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#C678DD"> void</span><span style="color:#61AFEF"> MakeSound</span><span style="color:#ABB2BF">() {</span></span>
+<span class="line"><span style="color:#E5C07B">        Console</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">WriteLine</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">&quot;Le chien aboie&quot;</span><span style="color:#ABB2BF">);</span></span>
+<span class="line"><span style="color:#ABB2BF">    }</span></span>
+<span class="line"><span style="color:#ABB2BF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">public</span><span style="color:#C678DD"> class</span><span style="color:#E5C07B"> Bird</span><span style="color:#ABB2BF"> : </span><span style="color:#E5C07B">IFly</span><span style="color:#ABB2BF">, </span><span style="color:#E5C07B">IMakeSound</span><span style="color:#ABB2BF">, </span><span style="color:#E5C07B">IEat</span><span style="color:#ABB2BF"> {</span></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#C678DD"> void</span><span style="color:#61AFEF"> Eat</span><span style="color:#ABB2BF">() {</span></span>
+<span class="line"><span style="color:#E5C07B">        Console</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">WriteLine</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">&quot;L&#39;oiseau mange&quot;</span><span style="color:#ABB2BF">);</span></span>
+<span class="line"><span style="color:#ABB2BF">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#C678DD"> void</span><span style="color:#61AFEF"> Fly</span><span style="color:#ABB2BF">() {</span></span>
+<span class="line"><span style="color:#E5C07B">        Console</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">WriteLine</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">&quot;L&#39;oiseau vole&quot;</span><span style="color:#ABB2BF">);</span></span>
+<span class="line"><span style="color:#ABB2BF">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#C678DD"> void</span><span style="color:#61AFEF"> MakeSound</span><span style="color:#ABB2BF">() {</span></span>
+<span class="line"><span style="color:#E5C07B">        Console</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">WriteLine</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">&quot;L&#39;oiseau gazouille&quot;</span><span style="color:#ABB2BF">);</span></span>
+<span class="line"><span style="color:#ABB2BF">    }</span></span>
+<span class="line"><span style="color:#ABB2BF">}</span></span></code></pre>
+<h3 id="d---principe-dinversion-des-dépendances">D - Principe d’Inversion des Dépendances</h3>
+<p>Les modules de haut niveau ne devraient pas dépendre des modules de bas niveau. Les deux devraient dépendre d’abstractions.</p>
+<p>Si nous prenons un exemple plus réaliste ; avec la classe <code>OrderProcessor</code>, nous pouvons voir que la classe <code>OrderProcessor</code> dépend de la classe <code>EmailService</code>.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf;overflow-x:auto" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#C678DD">public</span><span style="color:#C678DD"> interface</span><span style="color:#E5C07B"> IMessageService</span><span style="color:#ABB2BF"> {</span></span>
+<span class="line"><span style="color:#C678DD">    void</span><span style="color:#61AFEF"> Send</span><span style="color:#ABB2BF">(</span><span style="color:#C678DD">string</span><span style="color:#E5C07B"> message</span><span style="color:#ABB2BF">);</span></span>
+<span class="line"><span style="color:#ABB2BF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">public</span><span style="color:#C678DD"> class</span><span style="color:#E5C07B"> EmailService</span><span style="color:#ABB2BF"> : </span><span style="color:#E5C07B">IMessageService</span><span style="color:#ABB2BF"> {</span></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#C678DD"> void</span><span style="color:#61AFEF"> Send</span><span style="color:#ABB2BF">(</span><span style="color:#C678DD">string</span><span style="color:#E5C07B"> message</span><span style="color:#ABB2BF">) {</span></span>
+<span class="line"><span style="color:#E5C07B">        Console</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">WriteLine</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">$&quot;Envoi d&#39;email : </span><span style="color:#ABB2BF">{</span><span style="color:#E06C75">message</span><span style="color:#ABB2BF">}</span><span style="color:#98C379">&quot;</span><span style="color:#ABB2BF">);</span></span>
+<span class="line"><span style="color:#ABB2BF">    }</span></span>
+<span class="line"><span style="color:#ABB2BF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">public</span><span style="color:#C678DD"> class</span><span style="color:#E5C07B"> OrderProcessor</span><span style="color:#ABB2BF"> {</span></span>
+<span class="line"><span style="color:#C678DD">    private</span><span style="color:#C678DD"> readonly</span><span style="color:#E5C07B"> IMessageService</span><span style="color:#E06C75"> _messageService</span><span style="color:#ABB2BF">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#61AFEF"> OrderProcessor</span><span style="color:#ABB2BF">(</span><span style="color:#E5C07B">IMessageService</span><span style="color:#E5C07B"> messageService</span><span style="color:#ABB2BF">) {</span></span>
+<span class="line"><span style="color:#E06C75">        _messageService</span><span style="color:#56B6C2"> =</span><span style="color:#E06C75"> messageService</span><span style="color:#ABB2BF">;</span></span>
+<span class="line"><span style="color:#ABB2BF">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">    public</span><span style="color:#C678DD"> void</span><span style="color:#61AFEF"> ProcessOrder</span><span style="color:#ABB2BF">() {</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic">        // ...</span></span>
+<span class="line"><span style="color:#E5C07B">        _messageService</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">Send</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">&quot;Commande confirmée&quot;</span><span style="color:#ABB2BF">);</span></span>
+<span class="line"><span style="color:#ABB2BF">    }</span></span>
+<span class="line"><span style="color:#ABB2BF">}</span></span></code></pre>
+<h2 id="principe-kiss">Principe KISS</h2>
+<p>Keep It Simple, Stupid (Garde ça Simple, Stupide).</p>
+<p>Le principe KISS énonce que les solutions simples sont souvent meilleures que les solutions complexes.</p>
+<p>Prenons un exemple simple : filtrer les utilisateurs actifs dans une liste d’objets <code>User</code>.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf;overflow-x:auto" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#C678DD">var</span><span style="color:#E06C75"> activeUsers</span><span style="color:#56B6C2"> =</span><span style="color:#ABB2BF"> new </span><span style="color:#E5C07B">List</span><span style="color:#ABB2BF">&lt;</span><span style="color:#E5C07B">User</span><span style="color:#ABB2BF">&gt;();</span></span>
+<span class="line"><span style="color:#C678DD">foreach</span><span style="color:#ABB2BF"> (</span><span style="color:#C678DD">var</span><span style="color:#E06C75"> user</span><span style="color:#C678DD"> in</span><span style="color:#E06C75"> users</span><span style="color:#ABB2BF">) {</span></span>
+<span class="line"><span style="color:#C678DD">    if</span><span style="color:#ABB2BF"> (</span><span style="color:#E5C07B">user</span><span style="color:#ABB2BF">.</span><span style="color:#E5C07B">IsActive</span><span style="color:#56B6C2"> ==</span><span style="color:#D19A66"> true</span><span style="color:#ABB2BF">) {</span></span>
+<span class="line"><span style="color:#E5C07B">        activeUsers</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">Add</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">user</span><span style="color:#ABB2BF">);</span></span>
+<span class="line"><span style="color:#ABB2BF">    }</span></span>
+<span class="line"><span style="color:#ABB2BF">}</span></span></code></pre>
+<p>Une alternative plus concise, lisible et expressive dans ce cas est d’utiliser LINQ :</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf;overflow-x:auto" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#C678DD">var</span><span style="color:#E06C75"> activeUsers</span><span style="color:#56B6C2"> =</span><span style="color:#E5C07B"> users</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">Where</span><span style="color:#ABB2BF">(</span><span style="color:#E5C07B">user</span><span style="color:#ABB2BF"> =&gt; </span><span style="color:#E5C07B">user</span><span style="color:#ABB2BF">.</span><span style="color:#E5C07B">IsActive</span><span style="color:#56B6C2"> ==</span><span style="color:#D19A66"> true</span><span style="color:#ABB2BF">).</span><span style="color:#61AFEF">ToList</span><span style="color:#ABB2BF">();</span></span></code></pre>
+<h2 id="conclusion">Conclusion</h2>
+<p>Il n’est pas toujours simple d’appliquer tous ces principes en même temps, mais ils offrent une base solide pour écrire du code durable et compréhensible.
+Le principe KISS est un bon moyen de garder le code simple et lisible.</p>
+<h2 id="quiz">Quiz</h2>
+<ul>
+<li>
+<span class="hover-reveal" data-tooltip="Principe de Responsabilité Unique">Qu’est-ce que le S dans SOLID ?</span>
+</li>
+<li>
+<span class="hover-reveal" data-tooltip="Principe Ouvert/Fermé">Qu’est-ce que le O dans SOLID ?</span>
+</li>
+<li>
+<span class="hover-reveal" data-tooltip="Principe de Substitution de Liskov">Qu’est-ce que le L dans SOLID ?</span>
+</li>
+<li>
+<span class="hover-reveal" data-tooltip="Principe de Ségrégation des Interfaces">Qu’est-ce que le I dans SOLID ?</span>
+</li>
+<li>
+<span class="hover-reveal" data-tooltip="Principe d'Inversion des Dépendances">Qu’est-ce que le D dans SOLID ?</span>
+</li>
+<li>
+<span class="hover-reveal" data-tooltip="Principe KISS">Qu’est-ce que le principe KISS ?</span>
+</li>
+<li>
+<span class="hover-reveal" data-tooltip="Une classe abstraite est une classe qui ne peut pas être instanciée. Elle ne peut être héritée que par d'autres classes.">Qu’est-ce qu’une classe abstraite ?</span>
+</li>
+</ul>
+<p>Survolez le texte pour voir la réponse. (Ne fonctionne pas sur mobile)</p>
+<p>Si vous n’avez pas compris, je vous invite à relire le contenu de l’article ou à consulter les références.</p>
+<h2 id="références">Références</h2>
+<ul>
+<li><a href="https://fr.wikipedia.org/wiki/Principe_SOLID">Principes SOLID</a></li>
+<li><a href="https://fr.wikipedia.org/wiki/Principe_KISS">Principe KISS</a></li>
+</ul>  </div> </article> <div class="comments-section" data-astro-cid-jvxsf75u> <h2 data-astro-cid-jvxsf75u>Commentaires</h2> <div class="utterances-container" id="comments" data-astro-cid-jvxsf75u></div> </div> <script>(function(){const repo = "Joseph-Meunier/Blog";
+const issueTerm = "pathname";
+const label = "";
+
+(function() {
+	function getTheme() {
+		const theme = document.documentElement.getAttribute('data-theme');
+		return theme === 'dark' ? 'github-dark' : 'github-light';
+	}
+
+	function loadUtterances() {
+		const script = document.createElement('script');
+		script.src = 'https://utteranc.es/client.js';
+		script.setAttribute('repo', repo);
+		script.setAttribute('issue-term', issueTerm);
+		if (label) script.setAttribute('label', label);
+		script.setAttribute('theme', getTheme());
+		script.setAttribute('crossorigin', 'anonymous');
+		script.async = true;
+		
+		const container = document.getElementById('comments');
+		if (container) {
+			container.appendChild(script);
+		}
+	}
+
+	function updateUtterancesTheme() {
+		const theme = getTheme();
+		const iframe = document.querySelector('.utterances-frame');
+		if (iframe && iframe.contentWindow) {
+			const message = {
+				type: 'set-theme',
+				theme: theme
+			};
+			iframe.contentWindow.postMessage(message, 'https://utteranc.es');
+		}
+	}
+
+	// Load Utterances with initial theme
+	loadUtterances();
+
+	// Watch for theme changes
+	const observer = new MutationObserver(function(mutations) {
+		mutations.forEach(function(mutation) {
+			if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+				updateUtterancesTheme();
+			}
+		});
+	});
+
+	observer.observe(document.documentElement, {
+		attributes: true,
+		attributeFilter: ['data-theme']
+	});
+})();
+})();</script>  </main> <footer data-astro-cid-sz7xmlte>
+&copy; 2026 Gaston De Sade. All rights reserved.
+<div class="social-links" data-astro-cid-sz7xmlte> <!--
+		<a href="https://m.webtoo.ls/@astro" target="_blank">
+			<span class="sr-only">Follow Astro on Mastodon</span>
+			<svg
+				viewBox="0 0 16 16"
+				aria-hidden="true"
+				width="32"
+				height="32"
+				astro-icon="social/mastodon"
+				><path
+					fill="currentColor"
+					d="M11.19 12.195c2.016-.24 3.77-1.475 3.99-2.603.348-1.778.32-4.339.32-4.339 0-3.47-2.286-4.488-2.286-4.488C12.062.238 10.083.017 8.027 0h-.05C5.92.017 3.942.238 2.79.765c0 0-2.285 1.017-2.285 4.488l-.002.662c-.004.64-.007 1.35.011 2.091.083 3.394.626 6.74 3.78 7.57 1.454.383 2.703.463 3.709.408 1.823-.1 2.847-.647 2.847-.647l-.06-1.317s-1.303.41-2.767.36c-1.45-.05-2.98-.156-3.215-1.928a3.614 3.614 0 0 1-.033-.496s1.424.346 3.228.428c1.103.05 2.137-.064 3.188-.189zm1.613-2.47H11.13v-4.08c0-.859-.364-1.295-1.091-1.295-.804 0-1.207.517-1.207 1.541v2.233H7.168V5.89c0-1.024-.403-1.541-1.207-1.541-.727 0-1.091.436-1.091 1.296v4.079H3.197V5.522c0-.859.22-1.541.66-2.046.456-.505 1.052-.764 1.793-.764.856 0 1.504.328 1.933.983L8 4.39l.417-.695c.429-.655 1.077-.983 1.934-.983.74 0 1.336.259 1.791.764.442.505.661 1.187.661 2.046v4.203z"
+				></path></svg
+			>
+		</a>
+		<a href="https://twitter.com/astrodotbuild" target="_blank">
+			<span class="sr-only">Follow Astro on Twitter</span>
+			<svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" astro-icon="social/twitter"
+				><path
+					fill="currentColor"
+					d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057 3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15z"
+				></path></svg
+			>
+		</a>
+		 --> <a href="https://github.com/Joseph-Meunier" target="_blank"> <span class="sr-only">Go to my github</span> <svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg> </a> </div> </footer>  </body></html>
