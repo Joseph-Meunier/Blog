@@ -123,6 +123,7 @@ const withBase = (path: string) => `${siteBase}${localizedPath(lang, path)}`;
 		flex-grow: 1;
 		display: flex;
 		justify-content: flex-end;
+		align-items: center;
 		gap: 1em;
 	}
 	h2 {
@@ -140,17 +141,17 @@ const withBase = (path: string) => `${siteBase}${localizedPath(lang, path)}`;
 		align-items: center;
 		gap: 1em;
 	}
-	:global(nav a) {
+	:global(.internal-links a) {
 		padding: 1em 0.75em;
 		color: rgb(var(--gray));
 		border-bottom: 4px solid transparent;
 		text-decoration: none;
 		transition: color .2s ease, border-color .2s ease;
 	}
-	:global(nav a:hover) {
+	:global(.internal-links a:hover) {
 		color: rgb(var(--gray-dark));
 	}
-	:global(nav a.active) {
+	:global(.internal-links a.active) {
 		text-decoration: none;
 		border-bottom-color: var(--accent);
 		color: rgb(var(--gray-dark));
