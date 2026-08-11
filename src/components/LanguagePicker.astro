@@ -6,11 +6,18 @@ const siteBase = import.meta.env.BASE_URL.replace(/\/$/, '');
 const targetLang = currentLang === 'fr' ? 'en' : 'fr';
 const targetLabel = targetLang.toUpperCase();
 const accessibleLabel = currentLang === 'fr' ? 'Switch to English' : 'Passer en français';
+const pathnameWithoutBase = siteBase && Astro.url.pathname.startsWith(siteBase)
+	? Astro.url.pathname.slice(siteBase.length)
+	: Astro.url.pathname;
+const pathSegments = pathnameWithoutBase.split('/').filter(Boolean);
+const hasLocalizedPath = pathSegments[0] === 'fr' || pathSegments[0] === 'en';
+if (hasLocalizedPath) pathSegments[0] = targetLang;
+const targetPath = hasLocalizedPath ? `/${pathSegments.join('/')}${Astro.url.pathname.endsWith('/') ? '/' : ''}` : `/${targetLang}/`;
 ---
 
 <a
 	class="language-switch"
-	href={`${siteBase}/${targetLang}/`}
+	href={`${siteBase}${targetPath}`}
 	hreflang={targetLang}
 	lang={targetLang}
 	aria-label={accessibleLabel}

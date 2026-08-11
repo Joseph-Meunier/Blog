@@ -1,92 +1,17 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
-import FormattedDateArray from '../components/FormattedDateArray.astro';
-import { getCollection } from 'astro:content';
-import { Image } from 'astro:assets';
-const isProd = process.env.NODE_ENV === 'production';
 const siteBase = import.meta.env.BASE_URL.replace(/\/$/, '');
-let posts = (await getCollection('blog'))
-    .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
-
-const postUrl = (id: string) => {
-	const [lang, ...slugParts] = id.split('/');
-	return `${siteBase}/${lang}/blog/${slugParts.join('/')}/`;
-};
+const target = `${siteBase}/fr/status`;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="fr">
 	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-		<style>
-			h1 {
-				text-align: center;
-				margin-top: 2rem;
-				font-size: 3rem;
-			}
-			.language { text-transform: uppercase; font-family: monospace; color: var(--accent-secondary); }
-		</style>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="robots" content="noindex" />
+		<meta http-equiv="refresh" content={`0;url=${target}`} />
+		<title>Redirection vers le statut</title>
+		<script is:inline define:vars={{ target }}>window.location.replace(target);</script>
 	</head>
-	<body>
-		<Header />
-		<main>
-            <h1>📊 Statut des posts</h1>
-            <table>
-                <tr>
-                    <th>Image</th>
-					<th>Langue</th>
-                    <th>Titre</th>
-                    <th>Statut</th>
-                    <th>Date de création</th>
-                    <th>Date de publication</th>
-                    <th>Date de mise à jour</th>
-                </tr>
-					{
-						posts.map((post) => (
-							<tr>
-								<td>
-									<a href={postUrl(post.id)}>
-										{post.data.heroImage && (
-											<Image width={720} height={360} src={post.data.heroImage} alt="" />
-										)}
-                                    </a>
-                                </td>
-								<td><span class="language">{post.id.split('/')[0]}</span></td>
-								<td>
-									<a href={postUrl(post.id)}>
-										<p class="title">{post.data.title}</p>
-									</a>
-								</td>
-								<td>
-									<p class="status">
-                                        {post.data.isPublished && post.data.pubDate.valueOf() < Date.now() ? 'Publié' : 
-                                        (post.data.isPublished && post.data.pubDate.valueOf() > Date.now() ? 'À venir' : 'Brouillon')}</p>
-								</td>
-                                <td>
-									<p class="date">
-										<FormattedDateArray date={post.data.startDate} />
-									</p>
-								</td>
-                                <td>
-                                    <p class="date">
-                                        <FormattedDateArray date={post.data.pubDate} />
-                                    </p>
-                                </td>
-                                <td>
-                                    <p class="date">
-                                        <FormattedDateArray date={post.data.updatedDate} />
-                                    </p>
-                                </td>
-							</tr>
-						))
-					}
-				</table>
-
-        </main>
-
-		<Footer />
-	</body>
+	<body><a href={target}>Ouvrir la page statut</a></body>
 </html>

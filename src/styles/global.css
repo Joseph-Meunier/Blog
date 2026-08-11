@@ -368,3 +368,78 @@ td {
 	.home-main { padding-top: 2rem; }
 	.home-main .stack { grid-template-columns: 1fr; }
 }
+
+/* Status dashboard */
+.status-page {
+	width: 1100px;
+}
+
+.status-page h1 {
+	margin-top: 2rem;
+	text-align: center;
+	font-size: 3rem;
+}
+
+.status-page .languages {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	flex-wrap: wrap;
+	gap: .5rem;
+}
+
+.status-page .language {
+	box-sizing: border-box;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.75rem;
+	height: 2rem;
+	margin: 0;
+	padding: 0;
+	border: 1px solid var(--accent);
+	background: rgba(0, 234, 255, .08);
+	color: var(--accent);
+	font: 700 .78rem/1 monospace;
+	letter-spacing: .08em;
+	text-transform: uppercase;
+	text-decoration: none;
+	text-shadow: none;
+	clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+	transition: color .2s ease, background .2s ease, box-shadow .2s ease;
+}
+
+.status-page a.language:hover {
+	background: var(--accent);
+	color: var(--color-bg);
+	text-shadow: none;
+	box-shadow: 0 0 14px rgba(0, 234, 255, .4);
+}
+
+.status-page .language.missing {
+	border-color: var(--color-border);
+	background: transparent;
+	color: rgb(var(--gray));
+	opacity: .4;
+	cursor: not-allowed;
+}
+
+.status-page .translation-title {
+	display: block;
+	margin-top: .35rem;
+	color: rgb(var(--gray));
+	font-size: .75rem;
+	line-height: 1.3;
+}
+
+.status-page .slug {
+	display: block;
+	margin-top: .4rem;
+	color: var(--accent-secondary);
+	font: .72rem/1.4 monospace;
+}
+
+@media (max-width: 900px) {
+	.status-page { overflow-x: auto; }
+	.status-page table { min-width: 900px; }
+}
