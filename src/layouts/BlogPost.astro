@@ -10,7 +10,7 @@ import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 type Props = CollectionEntry<'blog'>['data'];
 
-const { title, description, pubDate, updatedDate: rawUpdatedDate, heroImage, readingTime, tags } = Astro.props;
+const { title, description, startDate, pubDate, updatedDate: rawUpdatedDate, heroImage, readingTime, tags } = Astro.props;
 
 // Scope `updatedDate` to the whole page (frontmatter) so it can be used in the template
 // Make sure we compare date values, not object identity
@@ -181,7 +181,7 @@ const t = useTranslations(lang);
 								<span class="date-card-icon">✍️</span>
 								<div class="date-card-title">{t('post.written')}</div>
 								<div class="date-card-value">
-									<FormattedDate date={pubDate} locale={locale} />
+									<FormattedDate date={startDate} locale={locale} />
 								</div>
 							</div>
 							<div class="date-card">
