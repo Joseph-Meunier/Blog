@@ -13,6 +13,13 @@ export default defineConfig({
 	// makes Astro emit /Blog/assets/... URLs that do not exist in that image.
 	base,
 	integrations: [mdx(), sitemap()],
+	i18n: {
+		defaultLocale: 'fr',
+		locales: ['fr', 'en'],
+		routing: {
+			prefixDefaultLocale: true,
+		},
+	},
 	markdown: {
 		shikiConfig: {
 			theme: 'one-dark-pro',

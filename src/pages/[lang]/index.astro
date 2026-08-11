@@ -1,0 +1,42 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+import { languages, type Lang } from '../../i18n/ui';
+
+export function getStaticPaths() {
+	return Object.keys(languages).map((lang) => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Lang;
+const isFrench = lang === 'fr';
+---
+
+<!doctype html>
+<html lang={lang}>
+	<head><BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} /></head>
+	<style>h1 { text-align: center; margin-top: 2rem; font-size: 3rem; }</style>
+	<body>
+		<Header />
+		<main>
+			<h1>{isFrench ? '👋 Bienvenue sur mon blog !' : '👋 Welcome to my blog!'}</h1>
+			{isFrench ? (
+				<>
+					<p>Je suis un <strong>développeur fullstack junior</strong>, passionné par la création de solutions qui apportent de la valeur.</p>
+					<p>🛠️ <strong>Mes domaines d'exploration :</strong></p>
+					<ul><li><strong>Backend :</strong> C#/.NET</li><li><strong>Infra & DevOps :</strong> déploiement et monitoring sur VPS</li><li><strong>Frontend :</strong> Astro, Nuxt et Flutter</li><li><strong>IA :</strong> outils et techniques pour des projets intelligents</li></ul>
+					<p>📝 <strong>Tu trouveras ici des projets documentés, des tutoriels et des retours d'expérience concrets.</strong></p>
+				</>
+			) : (
+				<>
+					<p>I am a <strong>junior full-stack developer</strong> passionate about building useful solutions.</p>
+					<p>🛠️ <strong>I explore:</strong></p>
+					<ul><li><strong>Backend:</strong> C#/.NET</li><li><strong>Infrastructure & DevOps:</strong> VPS deployment and monitoring</li><li><strong>Frontend:</strong> Astro, Nuxt and Flutter</li><li><strong>AI:</strong> tools and techniques for intelligent projects</li></ul>
+					<p>📝 <strong>You will find documented projects, tutorials and practical lessons learned here.</strong></p>
+				</>
+			)}
+		</main>
+		<Footer />
+	</body>
+</html>

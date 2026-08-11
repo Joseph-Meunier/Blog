@@ -6,6 +6,7 @@ import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
 import Comments from '../components/Comments.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 type Props = CollectionEntry<'blog'>['data'];
 
@@ -15,10 +16,13 @@ const { title, description, pubDate, updatedDate: rawUpdatedDate, heroImage, rea
 // Make sure we compare date values, not object identity
 const isUpdatedDateIsOlderThanPubDate = rawUpdatedDate && rawUpdatedDate.valueOf() > pubDate.valueOf();
 const updatedDate = isUpdatedDateIsOlderThanPubDate ? rawUpdatedDate : null;
+const lang = getLangFromUrl(Astro.url);
+const locale = lang === 'fr' ? 'fr-FR' : 'en-US';
+const t = useTranslations(lang);
 
 ---
 
-<html lang="en">
+<html lang={lang}>
 	<head>
 		<BaseHead title={title} description={description} />
 		<style>
@@ -161,33 +165,33 @@ const updatedDate = isUpdatedDateIsOlderThanPubDate ? rawUpdatedDate : null;
 						<div class={`date ${updatedDate ? 'date-3cards' : 'date-2cards'}`}>
 							<div class="date-card startwrite">
 								<span class="date-card-icon">✍️</span>
-								<div class="date-card-title">Ecrit le</div>
+								<div class="date-card-title">{t('post.written')}</div>
 								<div class="date-card-value">
-									<FormattedDate date={pubDate} />
+									<FormattedDate date={pubDate} locale={locale} />
 								</div>
 							</div>
 							<div class="date-card">
 								<span class="date-card-icon">📅</span>
-								<div class="date-card-title">Publié le</div>
+								<div class="date-card-title">{t('post.published')}</div>
 								<div class="date-card-value">
-									<FormattedDate date={pubDate} />
+									<FormattedDate date={pubDate} locale={locale} />
 								</div>
 							</div>
 							{updatedDate && (
 								<div class="date-card update">
 									<span class="date-card-icon">🔄</span>
-									<div class="date-card-title">Mis à jour le</div>
+									<div class="date-card-title">{t('post.updated')}</div>
 									<div class="date-card-value">
-										<FormattedDate date={updatedDate} />
+										<FormattedDate date={updatedDate} locale={locale} />
 									</div>
 								</div>
 							)}
 						</div>
 						<h1>{title}</h1>
-						<p>Temps de lecture : <i>{readingTime}</i></p>
+						<p>{t('post.readingTime')} : <i>{readingTime}</i></p>
 						{tags && (
 							<p>
-								Tags :{' '}
+								{t('post.tags')} :{' '}
 								{tags.map((tag, index) => (
 									
 									<i>

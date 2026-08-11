@@ -2,27 +2,26 @@
 import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import type { GetStaticPaths, Page } from 'astro';
-import BaseHead from '../../components/BaseHead.astro';
-import Footer from '../../components/Footer.astro';
-import FormattedDate from '../../components/FormattedDate.astro';
-import Header from '../../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+import BaseHead from '../../../components/BaseHead.astro';
+import Footer from '../../../components/Footer.astro';
+import FormattedDate from '../../../components/FormattedDate.astro';
+import Header from '../../../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../../../consts';
 import type { CollectionEntry } from 'astro:content';
+import { languages, type Lang } from '../../../i18n/ui';
+import { useTranslations } from '../../../i18n/utils';
 
 export const getStaticPaths: GetStaticPaths = async ({ paginate }) => {
 	const isProd = process.env.NODE_ENV === 'production';
 	
-	let allPosts;
-	if(isProd) {
-		allPosts = (await getCollection('blog'))
-			.filter(post => post.data.isPublished && post.data.pubDate <= new Date())
+	const allPosts = await getCollection('blog');
+	return Object.keys(languages).flatMap((lang) => {
+		const posts = allPosts
+			.filter((post) => post.id.startsWith(`${lang}/`))
+			.filter((post) => !isProd || (post.data.isPublished && post.data.pubDate <= new Date()))
 			.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
-	} else {
-		allPosts = (await getCollection('blog'))
-			.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
-	}
-	
-	return paginate(allPosts, { pageSize: 10 });
+		return paginate(posts, { params: { lang }, pageSize: 10 });
+	});
 };
 
 type Props = {
@@ -30,6 +29,9 @@ type Props = {
 };
 
 const { page } = Astro.props;
+const lang = Astro.params.lang as Lang;
+const locale = lang === 'fr' ? 'fr-FR' : 'en-US';
+const t = useTranslations(lang);
 const isProd = process.env.NODE_ENV === 'production';
 const siteBase = import.meta.env.BASE_URL.replace(/\/$/, '');
 
@@ -43,7 +45,7 @@ const postStatus = (post: CollectionEntry<'blog'>) => {
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={lang}>
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 		<style>
@@ -169,20 +171,23 @@ const postStatus = (post: CollectionEntry<'blog'>) => {
 			<section>
 				<ul>
 					{
-						page.data.map((post) => (
+						page.data.map((post) => {
+							const slug = post.id.split('/').slice(1).join('/');
+							return (
 							<li>
-								<a href={siteBase ? `${siteBase}/blog/${post.id}/` : `/blog/${post.id}/`}
+								<a href={`${siteBase}/${lang}/blog/${slug}/`}
 								   class={!isProd ? (postStatus(post).status === 'Publié' ? 'post-published' : (postStatus(post).status === 'À venir' ? 'post-upcoming' : 'post-draft')) : ''}>
 									{post.data.heroImage && (
 										<Image width={720} height={360} src={post.data.heroImage} alt="" />
 									)}
 									<h4 class="title">{post.data.title}</h4>
 									<p class="date">
-										<FormattedDate date={post.data.pubDate} />
+										<FormattedDate date={post.data.pubDate} locale={locale} />
 									</p>
 								</a>
 							</li>
-						))
+							);
+						})
 					}
 				</ul>
 			</section>
@@ -190,19 +195,19 @@ const postStatus = (post: CollectionEntry<'blog'>) => {
 			{/* Pagination controls */}
 			<nav class="pagination">
 				{page.url.prev ? (
-					<a href={page.url.prev}>← Précédent</a>
+					<a href={page.url.prev}>{t('blog.previous')}</a>
 				) : (
-					<a class="disabled">← Précédent</a>
+					<a class="disabled">{t('blog.previous')}</a>
 				)}
 				
 				<span class="current-page">
-					Page {page.currentPage} sur {page.lastPage}
+					{t('blog.page', { current: page.currentPage, total: page.lastPage })}
 				</span>
 				
 				{page.url.next ? (
-					<a href={page.url.next}>Suivant →</a>
+					<a href={page.url.next}>{t('blog.next')}</a>
 				) : (
-					<a class="disabled">Suivant →</a>
+					<a class="disabled">{t('blog.next')}</a>
 				)}
 			</nav>
 		</main>

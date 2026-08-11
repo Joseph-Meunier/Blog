@@ -4,6 +4,7 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
 export async function GET(context) {
 	const posts = (await getCollection('blog'))
+		.filter((post) => post.id.startsWith('fr/'))
 		.filter((post) => post.data.isPublished && post.data.pubDate.valueOf() < Date.now().valueOf())
 		.sort((a, b) => b.data.pubDate - a.data.pubDate);
 	const siteBase = new URL(context.site).pathname.replace(/\/$/, '');
@@ -13,7 +14,7 @@ export async function GET(context) {
 		site: context.site,
 		items: posts.map((post) => ({
 			...post.data,
-			link: `${siteBase}/blog/${post.id}/`,
+			link: `${siteBase}/fr/blog/${post.id.replace(/^fr\//, '')}/`,
 		})),
 	});
 }
