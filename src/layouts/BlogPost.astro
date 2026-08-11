@@ -24,7 +24,15 @@ const t = useTranslations(lang);
 
 <html lang={lang}>
 	<head>
-		<BaseHead title={title} description={description} />
+		<BaseHead
+			title={title}
+			description={description}
+			image={heroImage}
+			pubDate={pubDate}
+			updatedDate={updatedDate ?? undefined}
+			tags={tags}
+			locale={lang === 'fr' ? 'fr_FR' : 'en_US'}
+		/>
 		<style>
 			main {
 				width: calc(100% - 2em);

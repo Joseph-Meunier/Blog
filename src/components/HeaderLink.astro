@@ -35,14 +35,13 @@ const stripBase = (p: string) => {
 const relPath = stripBase(pathname).replace(/\/$/, '') || '/';
 const relLink = stripBase(linkPath).replace(/\/$/, '') || '/';
 
-// If the link points to the site base ("home"), it's active only on the exact base page.
-// For section links (e.g. "blog"), consider them active for the section and its children.
-let isActive = false;
-if (relLink === '/' || relLink === '') {
-	isActive = relPath === '/' || relPath === '';
-} else {
-	isActive = relPath === relLink || relPath.startsWith(relLink + '/');
-}
+// Root and localized home links (e.g. /fr) require an exact match.
+// Deeper section links (e.g. /fr/blog) stay active for their child pages.
+const linkDepth = relLink.split('/').filter(Boolean).length;
+const isHomeLink = relLink === '/' || linkDepth <= 1;
+const isActive = isHomeLink
+	? relPath === relLink
+	: relPath === relLink || relPath.startsWith(relLink + '/');
 ---
 
 <a href={href} class:list={[className, { active: isActive }]} {...props}>
