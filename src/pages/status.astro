@@ -10,21 +10,26 @@ const isProd = process.env.NODE_ENV === 'production';
 const siteBase = import.meta.env.BASE_URL.replace(/\/$/, '');
 let posts = (await getCollection('blog'))
     .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const postUrl = (id: string) => {
+	const [lang, ...slugParts] = id.split('/');
+	return `${siteBase}/${lang}/blog/${slugParts.join('/')}/`;
+};
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-		
+		<style>
+			h1 {
+				text-align: center;
+				margin-top: 2rem;
+				font-size: 3rem;
+			}
+			.language { text-transform: uppercase; font-family: monospace; color: var(--accent-secondary); }
+		</style>
 	</head>
-	<style>
-		h1 {
-			text-align: center;
-			margin-top: 2rem;
-			font-size: 3rem;
-		}
-	</style>
 	<body>
 		<Header />
 		<main>
@@ -32,6 +37,7 @@ let posts = (await getCollection('blog'))
             <table>
                 <tr>
                     <th>Image</th>
+					<th>Langue</th>
                     <th>Titre</th>
                     <th>Statut</th>
                     <th>Date de création</th>
@@ -42,14 +48,15 @@ let posts = (await getCollection('blog'))
 						posts.map((post) => (
 							<tr>
 								<td>
-									<a href={siteBase ? `${siteBase}/blog/${post.id}/` : `/blog/${post.id}/`}>
+									<a href={postUrl(post.id)}>
 										{post.data.heroImage && (
 											<Image width={720} height={360} src={post.data.heroImage} alt="" />
 										)}
                                     </a>
                                 </td>
+								<td><span class="language">{post.id.split('/')[0]}</span></td>
 								<td>
-									<a href={siteBase ? `${siteBase}/blog/${post.id}/` : `/blog/${post.id}/`}>
+									<a href={postUrl(post.id)}>
 										<p class="title">{post.data.title}</p>
 									</a>
 								</td>
