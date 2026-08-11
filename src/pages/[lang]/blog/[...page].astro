@@ -117,19 +117,18 @@ const postStatus = (post: CollectionEntry<'blog'>) => {
 			}
 			/* Ajoutez ces styles */
 			.post-published {
-				border: 2px solid green;
-				border-radius: 12px;
-				padding: 10px;
+				box-shadow: inset 0 3px #18a875;
 			}
 			.post-upcoming {
-				border: 2px solid orange;
-				border-radius: 12px;
-				padding: 10px;
+				box-shadow: inset 0 3px #d99018;
 			}
 			.post-draft {
-				border: 2px solid red;
-				border-radius: 12px;
-				padding: 10px;
+				box-shadow: inset 0 3px #d14b68;
+			}
+			:global(html[data-theme="light"]) .post-published,
+			:global(html[data-theme="light"]) .post-upcoming,
+			:global(html[data-theme="light"]) .post-draft {
+				box-shadow: inset 0 3px var(--accent);
 			}
 			/* Pagination styles */
 			.pagination {

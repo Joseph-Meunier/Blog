@@ -75,6 +75,10 @@ const assetBase = import.meta.env.BASE_URL.endsWith('/')
 
 <!-- Global Metadata -->
 <meta name="viewport" content="width=device-width,initial-scale=1" />
+<!-- Keep the site's own theme palette authoritative. Dark Reader otherwise
+     recolors the light palette back to charcoal while our toggle still says light. -->
+<meta name="darkreader-lock" />
+<meta name="color-scheme" content="light dark" />
 
 <!-- Script pour éviter le flash de contenu non stylisé (FOUC) - Inline direct -->
 <script is:inline>
