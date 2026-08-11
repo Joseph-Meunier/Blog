@@ -45,8 +45,9 @@ const t = useTranslations(lang);
 			.hero-image img {
 				display: block;
 				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
+				border-radius: 0;
+				box-shadow: 0 0 0 1px var(--color-border), var(--neon-glow);
+				clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 24px 100%, 0 calc(100% - 24px));
 			}
 			.prose {
 				width: 720px;
@@ -54,6 +55,7 @@ const t = useTranslations(lang);
 				margin: auto;
 				padding: 1em;
 				color: rgb(var(--gray-dark));
+				background: rgba(2, 5, 11, .55);
 			}			
 			.prose pre {
 				background: #1e1e1e;
@@ -65,7 +67,7 @@ const t = useTranslations(lang);
 			}
 			
 			.prose code {
-				background: #f1f1f1;
+				background: var(--code-bg);
 				padding: 0.2rem 0.4rem;
 				border-radius: 4px;
 				font-size: 0.9em;
@@ -84,7 +86,9 @@ const t = useTranslations(lang);
 				padding: 1em 0;
 				text-align: center;
 				line-height: 1;
+				position: relative;
 			}
+			.title::before { content: '// TRANSMISSION LOG'; display: block; margin: 1rem 0 2rem; color: var(--accent-secondary); font: 700 .75rem/1 monospace; letter-spacing: .18em; }
 			.title h1 {
 				margin: 0 0 0.5em 0;
 			}
@@ -100,11 +104,11 @@ const t = useTranslations(lang);
 				grid-template-columns: 1fr 1fr 1fr;
 			}
 			.date-card {
-				background: white;
-				border-radius: 12px;
+				background: var(--color-surface);
+				border-radius: 0;
 				padding: 1.5rem;
 				box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
-				border: 1px solid rgba(var(--gray-light), 0.2);
+				border: 1px solid var(--color-border);
 				transition: all 0.3s ease;
 				text-align: center;
 			}
@@ -134,11 +138,12 @@ const t = useTranslations(lang);
 			
 			.date-card-title {
 				font-weight: 600;
-				color: black;
+				color: rgb(var(--gray-dark));
 				margin-bottom: 0.5rem;
 				font-size: 0.9rem;
 				text-transform: uppercase;
 				letter-spacing: 0.5px;
+				font-family: monospace;
 			}
 			
 			.date-card-value {
@@ -157,6 +162,7 @@ const t = useTranslations(lang);
 			.last-updated-on {
 				font-style: italic;
 			}
+			@media (max-width: 700px) { .date { grid-template-columns: 1fr; } .date-card { padding: 1rem; } }
 
 		</style>
 	</head>

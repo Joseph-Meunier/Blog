@@ -50,70 +50,69 @@ const postStatus = (post: CollectionEntry<'blog'>) => {
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 		<style>
 			main {
-				width: 960px;
+				width: 1080px;
+				padding-top: 4rem;
 			}
+			section::before { content: '// ARCHIVES · KNOWLEDGE DATABASE'; display: block; margin-bottom: 2rem; color: var(--accent); font: 700 .78rem/1 monospace; letter-spacing: .18em; }
 			ul {
-				display: flex;
-				flex-wrap: wrap;
+				display: grid;
+				grid-template-columns: repeat(2, minmax(0, 1fr));
 				gap: 2rem;
 				list-style-type: none;
 				margin: 0;
 				padding: 0;
 			}
 			ul li {
-				width: calc(50% - 1rem);
+				width: auto;
+				background: var(--color-surface);
+				border: 1px solid var(--color-border);
+				clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
 			}
 			ul li * {
 				text-decoration: none;
 				transition: 0.2s ease;
 			}
-			ul li:first-child {
-				width: 100%;
-				margin-bottom: 1rem;
-				text-align: center;
-			}
-			ul li:first-child img {
-				width: 100%;
-			}
-			ul li:first-child .title {
-				font-size: 2.369rem;
-			}
 			ul li img {
-				margin-bottom: 0.5rem;
-				border-radius: 12px;
+				display: block;
+				width: 100%;
+				aspect-ratio: 2 / 1;
+				object-fit: cover;
+				margin-bottom: 0;
+				border-radius: 0;
+				filter: saturate(.82) contrast(1.08);
 			}
 			ul li a {
 				display: block;
+				padding: .65rem;
 			}
 			.title {
 				margin: 0;
 				color: rgb(var(--black));
 				line-height: 1;
+				padding: .8rem .45rem .35rem;
 			}
 			.date {
 				margin: 0;
+				padding: 0 .45rem .7rem;
 				color: rgb(var(--gray));
+				font: .75rem/1.4 monospace;
+				letter-spacing: .08em;
 			}
 			ul li a:hover h4,
 			ul li a:hover .date {
 				color: rgb(var(--accent));
 			}
 			ul a:hover img {
-				box-shadow: var(--box-shadow);
+				box-shadow: 0 0 0 1px var(--accent), 0 0 28px rgba(0,234,255,.25);
 			}
+			ul li:hover { border-color: var(--accent); box-shadow: var(--neon-glow); }
 			@media (max-width: 720px) {
 				ul {
+					grid-template-columns: 1fr;
 					gap: 0.5em;
 				}
 				ul li {
-					width: 100%;
 					text-align: center;
-				}
-				ul li:first-child {
-					margin-bottom: 0;
-				}
-				ul li:first-child .title {
-					font-size: 1.563em;
 				}
 			}
 			/* Ajoutez ces styles */
@@ -143,16 +142,20 @@ const postStatus = (post: CollectionEntry<'blog'>) => {
 			.pagination a,
 			.pagination span {
 				padding: 0.5rem 1rem;
-				border-radius: 6px;
+				border-radius: 0;
+				font: 700 .75rem/1 monospace;
+				letter-spacing: .08em;
 				text-decoration: none;
 				transition: 0.2s ease;
 			}
 			.pagination a {
-				background-color: rgb(var(--accent));
-				color: white;
+				background-color: rgba(0,234,255,.08);
+				border: 1px solid var(--accent);
+				color: var(--accent);
 			}
 			.pagination a:hover {
-				background-color: rgb(var(--accent-dark));
+				background-color: var(--accent);
+				color: #02050b;
 			}
 			.pagination a.disabled {
 				background-color: rgb(var(--gray-light));

@@ -5,30 +5,32 @@
  */
 
 :root {
-	--accent: #2337ff;
-	--accent-dark: #000d8a;
-	--black: 15, 18, 25;
-	--gray: 96, 115, 159;
-	--gray-light: 229, 233, 240;
-	--gray-dark: 34, 41, 57;
-	--gray-gradient: rgba(var(--gray-light), 50%), #fff;
+	--accent: #00eaff;
+	--accent-secondary: #ff2bd6;
+	--accent-dark: #00a9c4;
+	--black: 235, 253, 255;
+	--gray: 126, 155, 170;
+	--gray-light: 26, 45, 58;
+	--gray-dark: 211, 239, 244;
+	--gray-gradient: rgba(3, 12, 22, .92), #02050b;
 	--box-shadow:
 		0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%), 0 16px 32px
 		rgba(var(--gray), 33%);
 	/* Semantic colors */
-	--color-bg: #ffffff;
-	--color-surface: #ffffff;
-	--color-text: #111827; /* slate-900 */
-	--color-border: #e5e7eb; /* gray-200 */
-	--code-bg: #f3f4f6; /* gray-100 */
-	--table-header-bg: #f2f2f2;
-	--table-cell-bg: #ffffff;
+	--color-bg: #02050b;
+	--color-surface: rgba(6, 18, 30, .82);
+	--color-text: #d8f5f7;
+	--color-border: rgba(0, 234, 255, .25);
+	--code-bg: rgba(0, 234, 255, .09);
+	--table-header-bg: #071c2a;
+	--table-cell-bg: rgba(5, 16, 27, .85);
 	--tooltip-bg: rgba(0, 0, 0, 0.9);
 	--tooltip-text: #ffffff;
 	/* Back-compat variable used in components */
 	--text-color: var(--color-text);
 	/* UI separators */
-	--header-sep: rgba(0, 0, 0, 0.08); /* subtle hairline in light */
+	--header-sep: rgba(0, 234, 255, .25);
+	--neon-glow: 0 0 18px rgba(0, 234, 255, .22), 0 0 42px rgba(255, 43, 214, .08);
 }
 
 body {
@@ -37,8 +39,14 @@ body {
 	padding: 0;
 	text-align: left;
 	/* Gradient on top + solid base color all the way down */
-	background: linear-gradient(var(--gray-gradient)) no-repeat, var(--color-bg);
-	background-size: 100% 600px, auto;
+	background-color: var(--color-bg);
+	background-image:
+		linear-gradient(rgba(0, 234, 255, .035) 1px, transparent 1px),
+		linear-gradient(90deg, rgba(0, 234, 255, .035) 1px, transparent 1px),
+		radial-gradient(circle at 12% 0%, rgba(0, 234, 255, .13), transparent 32rem),
+		radial-gradient(circle at 88% 14%, rgba(255, 43, 214, .11), transparent 28rem);
+	background-size: 40px 40px, 40px 40px, auto, auto;
+	background-attachment: fixed;
 	word-wrap: break-word;
 	overflow-wrap: break-word;
 	color: var(--color-text);
@@ -47,17 +55,16 @@ body {
 }
 
 /* Ensure the page around body also has the base color */
-html { background-color: var(--color-bg); }
+html { background-color: var(--color-bg); color-scheme: dark; }
 
 /* In dark mode, prefer a flat background without gradient for a cleaner look */
-html[data-theme="dark"] body {
-	background: var(--color-bg);
-}
+html[data-theme="dark"] body { background-color: var(--color-bg); }
 
 /* Dark theme variables and base adjustments */
 html[data-theme="dark"] {
-	--accent: #7c9cff;
-	--accent-dark: #4f46e5;
+	--accent: #00eaff;
+	--accent-secondary: #ff2bd6;
+	--accent-dark: #00a9c4;
 	--black: 240, 242, 248;
 	--gray: 160, 170, 190;
 	--gray-light: 55, 60, 75;
@@ -65,11 +72,11 @@ html[data-theme="dark"] {
 	--gray-gradient: rgba(0, 0, 0, 60%), #0f1115;
 	--box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5), 0 8px 24px rgba(0, 0, 0, 0.4), 0 16px 32px rgba(0, 0, 0, 0.4);
 	/* Semantic overrides */
-	--color-bg: #0f1115;
-	--color-surface: #151a22;
-	--color-text: #e5e7eb;
-	--color-border: #3a4150;
-	--code-bg: #1f2430;
+	--color-bg: #02050b;
+	--color-surface: rgba(6, 18, 30, .82);
+	--color-text: #d8f5f7;
+	--color-border: rgba(0, 234, 255, .25);
+	--code-bg: rgba(0, 234, 255, .09);
 	--table-header-bg: #2a2f3a;
 	--table-cell-bg: #1a1f29;
 	--tooltip-bg: rgba(255, 255, 255, 0.95);
@@ -91,6 +98,8 @@ h6 {
 	margin: 0 0 0.5rem 0;
 	color: rgb(var(--black));
 	line-height: 1.2;
+	letter-spacing: -.025em;
+	text-shadow: 0 0 24px rgba(0, 234, 255, .12);
 }
 h1 {
 	font-size: 3.052em;
@@ -113,9 +122,12 @@ b {
 }
 a {
 	color: var(--accent);
+	text-underline-offset: .2em;
+	transition: color .2s ease, text-shadow .2s ease;
 }
 a:hover {
-	color: var(--accent);
+	color: #fff;
+	text-shadow: 0 0 12px var(--accent);
 }
 p {
 	margin-bottom: 1em;
@@ -136,16 +148,19 @@ table {
 img {
 	max-width: 100%;
 	height: auto;
-	border-radius: 8px;
+	border-radius: 3px;
 }
 code {
 	padding: 2px 5px;
 	background-color: var(--code-bg);
-	border-radius: 2px;
+	border: 1px solid rgba(0, 234, 255, .12);
+	color: #ff79df;
 }
 pre {
 	padding: 1.5em;
-	border-radius: 8px;
+	border-radius: 3px;
+	border: 1px solid var(--color-border);
+	box-shadow: inset 3px 0 var(--accent-secondary);
 }
 pre > code {
 	all: unset;
@@ -155,10 +170,22 @@ blockquote {
 	padding: 0 0 0 20px;
 	margin: 0px;
 	font-size: 1.333em;
+	background: linear-gradient(90deg, rgba(0,234,255,.08), transparent);
 }
 hr {
 	border: none;
 	border-top: 1px solid var(--color-border);
+}
+
+::selection { background: var(--accent-secondary); color: #fff; }
+
+body::before {
+	content: '';
+	position: fixed;
+	inset: 0;
+	pointer-events: none;
+	z-index: 9999;
+	background: repeating-linear-gradient(0deg, rgba(255,255,255,.012) 0, rgba(255,255,255,.012) 1px, transparent 1px, transparent 4px);
 }
 @media (max-width: 720px) {
 	body {

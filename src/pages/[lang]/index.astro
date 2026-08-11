@@ -16,27 +16,41 @@ const isFrench = lang === 'fr';
 <!doctype html>
 <html lang={lang}>
 	<head><BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} /></head>
-	<style>h1 { text-align: center; margin-top: 2rem; font-size: 3rem; }</style>
+	<style>
+		main { width: 920px; padding-top: 5rem; }
+		.hero { position: relative; padding: clamp(2rem, 6vw, 5rem); border: 1px solid var(--color-border); background: linear-gradient(135deg, rgba(0,234,255,.07), rgba(6,18,30,.82) 45%, rgba(255,43,214,.06)); clip-path: polygon(0 0, calc(100% - 28px) 0, 100% 28px, 100% 100%, 28px 100%, 0 calc(100% - 28px)); box-shadow: var(--neon-glow); }
+		.eyebrow { margin: 0 0 1rem; color: var(--accent); font: 700 .75rem/1 monospace; letter-spacing: .18em; text-transform: uppercase; }
+		h1 { margin: 0 0 1.5rem; max-width: 13ch; font-size: clamp(2.7rem, 8vw, 5.8rem); line-height: .92; text-transform: uppercase; }
+		h1 span { color: transparent; -webkit-text-stroke: 1px var(--accent-secondary); text-shadow: 0 0 24px rgba(255,43,214,.35); }
+		.intro { max-width: 720px; color: rgb(var(--gray-dark)); font-size: 1.1rem; }
+		.stack-title { margin-top: 3.5rem; font: 700 .8rem/1 monospace; letter-spacing: .16em; color: var(--accent-secondary); text-transform: uppercase; }
+		.stack { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; padding: 1px; list-style: none; background: var(--color-border); }
+		.stack li { padding: 1.25rem; background: var(--color-surface); }
+		.stack strong { color: var(--accent); font-family: monospace; text-transform: uppercase; }
+		.closing { margin-top: 2.5rem; padding-left: 1rem; border-left: 2px solid var(--accent-secondary); }
+		@media (max-width: 620px) { main { padding-top: 2rem; } .stack { grid-template-columns: 1fr; } }
+	</style>
 	<body>
 		<Header />
-		<main>
-			<h1>{isFrench ? '👋 Bienvenue sur mon blog !' : '👋 Welcome to my blog!'}</h1>
+		<main><section class="hero">
+			<p class="eyebrow">// {isFrench ? 'Signal entrant · Portfolio développeur' : 'Incoming signal · Developer portfolio'}</p>
+			<h1>{isFrench ? <>Code. <span>Créer.</span> Explorer.</> : <>Code. <span>Build.</span> Explore.</>}</h1>
 			{isFrench ? (
 				<>
-					<p>Je suis un <strong>développeur fullstack junior</strong>, passionné par la création de solutions qui apportent de la valeur.</p>
-					<p>🛠️ <strong>Mes domaines d'exploration :</strong></p>
-					<ul><li><strong>Backend :</strong> C#/.NET</li><li><strong>Infra & DevOps :</strong> déploiement et monitoring sur VPS</li><li><strong>Frontend :</strong> Astro, Nuxt et Flutter</li><li><strong>IA :</strong> outils et techniques pour des projets intelligents</li></ul>
-					<p>📝 <strong>Tu trouveras ici des projets documentés, des tutoriels et des retours d'expérience concrets.</strong></p>
+					<p class="intro">Je suis un <strong>développeur fullstack junior</strong>, passionné par la création de solutions qui apportent de la valeur.</p>
+					<p class="stack-title">Systèmes explorés</p>
+					<ul class="stack"><li><strong>Backend //</strong> C#/.NET</li><li><strong>Infra //</strong> Déploiement & monitoring VPS</li><li><strong>Frontend //</strong> Astro, Nuxt & Flutter</li><li><strong>IA //</strong> Outils & projets intelligents</li></ul>
+					<p class="closing">Projets documentés, tutoriels et retours d'expérience concrets.</p>
 				</>
 			) : (
 				<>
-					<p>I am a <strong>junior full-stack developer</strong> passionate about building useful solutions.</p>
-					<p>🛠️ <strong>I explore:</strong></p>
-					<ul><li><strong>Backend:</strong> C#/.NET</li><li><strong>Infrastructure & DevOps:</strong> VPS deployment and monitoring</li><li><strong>Frontend:</strong> Astro, Nuxt and Flutter</li><li><strong>AI:</strong> tools and techniques for intelligent projects</li></ul>
-					<p>📝 <strong>You will find documented projects, tutorials and practical lessons learned here.</strong></p>
+					<p class="intro">I am a <strong>junior full-stack developer</strong> passionate about building useful solutions.</p>
+					<p class="stack-title">Systems explored</p>
+					<ul class="stack"><li><strong>Backend //</strong> C#/.NET</li><li><strong>Infra //</strong> VPS deployment & monitoring</li><li><strong>Frontend //</strong> Astro, Nuxt & Flutter</li><li><strong>AI //</strong> Tools & intelligent projects</li></ul>
+					<p class="closing">Documented projects, tutorials and practical lessons learned.</p>
 				</>
 			)}
-		</main>
+		</section></main>
 		<Footer />
 	</body>
 </html>
