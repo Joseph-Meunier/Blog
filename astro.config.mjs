@@ -3,12 +3,15 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import { defineConfig } from 'astro/config';
 
-const isProd = process.env.NODE_ENV === 'production';
+const site = process.env.SITE_URL ?? 'http://blog-front-xhqwx0-35c7b6-69-62-110-239.sslip.io';
+const base = process.env.BASE_PATH ?? '/';
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'http://blog-front-xhqwx0-35c7b6-69-62-110-239.sslip.io',
-	base: isProd ? '/Blog' : '/',
+	site,
+	// Dokploy exposes the nginx container at the domain root. A /Blog base
+	// makes Astro emit /Blog/assets/... URLs that do not exist in that image.
+	base,
 	integrations: [mdx(), sitemap()],
 	markdown: {
 		shikiConfig: {
