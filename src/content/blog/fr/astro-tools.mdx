@@ -1,37 +1,37 @@
 ---
-title: 'Les outils Astro de mon blog'
-description: 'Internationalisation, collections de contenu, routes localisées et SEO : les outils et techniques utilisés pour faire évoluer ce blog Astro.'
+title: 'Les outils Astro utilisés pour construire ce blog'
+description: 'Tour d’horizon des outils utilisés dans ce blog Astro : Content Collections, MDX, i18n, routes dynamiques, BASE_URL, page de statut, SEO et Lucide.'
 startDate: '2025-11-07'
 pubDate: '2026-08-11'
 updatedDate: '2026-08-11'
 heroImage: '../../../assets/articles/astro-tools/hero.webp'
 isPublished: true
 readingTime: '9 min'
-tags: ['astro', 'i18n', 'mdx', 'seo', 'typescript']
+tags: ['astro', 'content-collections', 'mdx', 'i18n', 'seo', 'typescript']
 ---
 
-Astro fournit une base légère, mais suffisamment flexible pour construire un blog multilingue complet. En faisant évoluer ce site, j’ai dû organiser les traductions, générer des routes cohérentes et éviter plusieurs pièges liés aux liens et au déploiement.
+Ce blog ne repose pas sur un seul outil, mais sur plusieurs fonctionnalités Astro qui répondent chacune à un besoin précis : écrire les articles, valider leurs métadonnées, créer les traductions, générer les pages et construire des liens compatibles avec le développement comme avec la production.
 
-Cet article présente les outils et techniques utilisés, avec les corrections concrètes apportées au blog.
+Voici ces outils, présentés séparément avec leur rôle et leur utilisation concrète dans le projet.
 
 ## Table des matières
 
-- [Les collections de contenu](#les-collections-de-contenu)
-- [Organiser les articles par langue](#organiser-les-articles-par-langue)
-- [Générer la liste des articles](#générer-la-liste-des-articles)
-- [Construire des URLs localisées](#construire-des-urls-localisées)
-- [Créer les pages de chaque article](#créer-les-pages-de-chaque-article)
-- [Gérer le chemin de base](#gérer-le-chemin-de-base)
-- [Créer une page de statut](#créer-une-page-de-statut)
-- [Les outils complémentaires](#les-outils-complémentaires)
-- [Les erreurs à éviter](#les-erreurs-à-éviter)
+- [Astro Content Collections](#outil-1--astro-content-collections)
+- [MDX](#outil-2--mdx)
+- [Les routes dynamiques Astro](#outil-3--les-routes-dynamiques-astro)
+- [Le système i18n du blog](#outil-4--le-système-i18n-du-blog)
+- [import.meta.env.BASE_URL](#outil-5--importmetaenvbase_url)
+- [La page de statut](#outil-6--la-page-de-statut)
+- [BaseHead et le SEO](#outil-7--basehead-et-le-seo)
+- [Lucide Astro](#outil-8--lucide-astro)
+- [La commande de validation](#outil-9--la-commande-de-validation)
 - [Conclusion](#conclusion)
 
-## Les collections de contenu
+## Outil 1 — Astro Content Collections
 
-Les collections Astro permettent de charger des fichiers Markdown ou MDX tout en validant leurs métadonnées avec un schéma TypeScript.
+Les **Content Collections** sont le cœur de la gestion des articles. Elles chargent les fichiers Markdown et MDX, puis valident leur frontmatter avec un schéma.
 
-Dans ce projet, la collection charge récursivement tous les articles présents dans `src/content/blog` :
+La collection du blog est définie dans `src/content.config.ts` :
 
 ```ts
 import { defineCollection, z } from 'astro:content';
@@ -45,9 +45,9 @@ const blog = defineCollection({
   schema: ({ image }) => z.object({
     title: z.string(),
     description: z.string(),
+    startDate: z.coerce.date(),
     pubDate: z.coerce.date(),
     updatedDate: z.coerce.date(),
-    startDate: z.coerce.date(),
     heroImage: image(),
     isPublished: z.boolean(),
     tags: z.array(z.string()).optional(),
@@ -58,81 +58,66 @@ const blog = defineCollection({
 export const collections = { blog };
 ```
 
-Ce schéma évite de publier un article incomplet : Astro signale pendant le build une date incorrecte, une image manquante ou un champ du mauvais type.
+### Ce que cet outil apporte
 
-## Organiser les articles par langue
+- Une structure commune pour tous les articles.
+- Une validation des dates, images, tags et statuts.
+- Des erreurs explicites pendant le build.
+- Une API typée avec `getCollection('blog')`.
 
-Les traductions sont rangées dans deux dossiers qui partagent les mêmes slugs :
+Les trois dates ont des rôles différents :
+
+- `startDate` : début de rédaction.
+- `pubDate` : publication.
+- `updatedDate` : dernière modification.
+
+Le layout doit utiliser le bon champ pour chaque carte. Afficher `pubDate` dans « Écrit le » donnerait une information incorrecte même si le build reste valide.
+
+## Outil 2 — MDX
+
+Le format **MDX** combine la simplicité de Markdown avec la possibilité d’utiliser du JSX et des composants Astro.
+
+Un article commence par son frontmatter :
+
+```mdx
+---
+title: 'Les outils Astro utilisés pour construire ce blog'
+startDate: '2025-11-07'
+pubDate: '2025-12-07'
+updatedDate: '2026-08-11'
+isPublished: false
+---
+```
+
+Le reste du fichier contient des titres, des listes, des liens, des images et des blocs de code. MDX permet aussi d’importer une constante ou un composant lorsque l’article a besoin d’un comportement plus avancé.
+
+### Quand utiliser MDX ?
+
+MDX est utile pour :
+
+- Intégrer un composant interactif dans un article.
+- Afficher un contenu conditionnel.
+- Réutiliser un composant Astro existant.
+- Conserver une syntaxe proche de Markdown pour le texte.
+
+Pour un article purement éditorial, un fichier `.md` peut suffire. Ici, `.mdx` garde la possibilité d’enrichir les tutoriels plus tard.
+
+## Outil 3 — Les routes dynamiques Astro
+
+Les fichiers placés dans `src/pages` définissent les URLs publiques. Les segments entre crochets sont dynamiques :
 
 ```text
-src/content/blog/
-├── fr/
-│   ├── astro-blog.mdx
-│   └── astro-tools.mdx
-└── en/
-    ├── astro-blog.mdx
-    └── astro-tools.mdx
+src/pages/[lang]/blog/[...slug].astro
 ```
 
-L’identifiant généré par Astro contient alors la langue :
+Cette seule page peut générer :
 
 ```text
-fr/astro-tools
-en/astro-tools
+/fr/blog/astro-tools/
+/en/blog/astro-tools/
 ```
 
-Chaque traduction est un véritable article. La version anglaise ne réutilise pas silencieusement le contenu français : son titre, sa description, ses tags, son sommaire et son corps sont traduits.
-
-Cette organisation permet aussi de publier une traduction plus tard, tant que l’interface sait gérer l’absence temporaire d’une langue.
-
-## Générer la liste des articles
-
-La page `src/pages/[lang]/blog/[...page].astro` récupère la langue depuis l’URL, puis filtre la collection :
-
-```ts
-const allPosts = await getCollection('blog');
-
-const posts = allPosts
-  .filter((post) => post.id.startsWith(`${lang}/`))
-  .filter((post) =>
-    !isProd ||
-    (post.data.isPublished && post.data.pubDate <= new Date())
-  )
-  .sort(
-    (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
-  );
-```
-
-En développement, les brouillons et les publications planifiées restent visibles pour faciliter les tests. En production, seuls les articles publiés dont la date est passée apparaissent.
-
-Les résultats sont ensuite transmis à `paginate` :
-
-```ts
-return paginate(posts, {
-  params: { lang },
-  pageSize: 10,
-});
-```
-
-## Construire des URLs localisées
-
-Un identifiant de contenu n’est pas directement une URL. Pour `en/astro-tools`, la route attendue est `/en/blog/astro-tools/`, et non `/blog/en/astro-tools/`.
-
-Il faut donc séparer la langue du slug :
-
-```ts
-const [postLang, ...slugParts] = post.id.split('/');
-const slug = slugParts.join('/');
-const url = `${siteBase}/${postLang}/blog/${slug}/`;
-```
-
-Cette règle est utilisée dans la liste des articles et sur la page de statut. Centraliser cette construction dans un utilitaire partagé sera une amélioration utile si d’autres pages doivent créer les mêmes liens.
-
-## Créer les pages de chaque article
-
-La route dynamique `src/pages/[lang]/blog/[...slug].astro` génère une page statique pour chaque entrée de la collection.
-
-Le principe est de transformer l’identifiant en paramètres de route :
+Pour chaque article, l’identifiant de collection est transformé en paramètres :
 
 ```ts
 const [lang, ...slugParts] = post.id.split('/');
@@ -146,46 +131,80 @@ return {
 };
 ```
 
-Astro peut alors produire au build les deux variantes :
+Le segment `[...slug]` accepte aussi des slugs imbriqués. Un contenu identifié par `fr/guides/astro-tools` pourrait ainsi produire `/fr/blog/guides/astro-tools/`.
+
+## Outil 4 — Le système i18n du blog
+
+Les traductions sont de vrais fichiers séparés :
 
 ```text
-/fr/blog/astro-tools/
-/en/blog/astro-tools/
+src/content/blog/
+├── fr/
+│   └── astro-tools.mdx
+└── en/
+    └── astro-tools.mdx
 ```
 
-Ce sont de vraies pages statiques, rapides à servir et faciles à indexer.
+Astro génère alors les identifiants `fr/astro-tools` et `en/astro-tools`.
 
-## Gérer le chemin de base
+La liste du blog filtre la collection selon la langue de la route :
 
-Un site déployé dans un sous-dossier, par exemple sur GitHub Pages, ne peut pas supposer que sa racine est toujours `/`.
+```ts
+const posts = allPosts
+  .filter((post) => post.id.startsWith(`${lang}/`))
+  .filter((post) =>
+    !isProd ||
+    (post.data.isPublished && post.data.pubDate <= new Date())
+  )
+  .sort((a, b) =>
+    b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+  );
+```
 
-Astro expose le chemin configuré via `import.meta.env.BASE_URL` :
+Il ne faut pas afficher automatiquement le français sur la page anglaise. Une traduction doit contenir son propre titre, sa description, ses tags, son sommaire et son contenu.
+
+La documentation Astro détaille également comment [utiliser les collections pour du contenu traduit](https://docs.astro.build/en/recipes/i18n/#use-collections-for-translated-content).
+
+## Outil 5 — `import.meta.env.BASE_URL`
+
+`BASE_URL` permet de construire des liens qui fonctionnent aussi bien à la racine d’un domaine que dans un sous-dossier, par exemple sur GitHub Pages.
 
 ```ts
 const siteBase = import.meta.env.BASE_URL.replace(/\/$/, '');
 ```
 
-On peut ensuite le préfixer aux URLs :
+Pour créer l’URL d’un article, il faut séparer la langue du slug :
 
 ```ts
-const url = `${siteBase}/${lang}/blog/${slug}/`;
+const [postLang, ...slugParts] = post.id.split('/');
+const slug = slugParts.join('/');
+const url = `${siteBase}/${postLang}/blog/${slug}/`;
 ```
 
-Cette approche fonctionne aussi bien en local avec `/` qu’en production avec un chemin comme `/Blog/`.
+L’ordre des segments est important :
 
-Il faut appliquer la même logique aux favicons, polices, sitemaps et autres fichiers placés dans `public/`.
+```text
+Incorrect : /blog/en/astro-tools/
+Correct   : /en/blog/astro-tools/
+```
 
-## Créer une page de statut
+La même base doit être utilisée pour les favicons, polices, sitemaps et autres ressources de `public/`.
 
-La page `/status` affiche tous les articles, y compris les brouillons et les versions traduites. Elle permet de contrôler rapidement :
+## Outil 6 — La page de statut
 
-- La langue de l’article.
-- Son statut : brouillon, à venir ou publié.
-- Ses dates de création, publication et mise à jour.
-- Son image principale.
-- Le lien vers la page générée.
+La page `/status` est un outil interne au projet. Elle utilise `getCollection` pour afficher tous les articles dans un tableau, y compris les brouillons et les traductions.
 
-Une fonction dédiée évite d’inverser la langue et le segment `blog` :
+Elle affiche :
+
+- L’image principale.
+- La langue.
+- Le titre.
+- Le statut.
+- La date de création.
+- La date de publication.
+- La date de mise à jour.
+
+Le lien est construit par une fonction dédiée :
 
 ```ts
 const postUrl = (id: string) => {
@@ -194,64 +213,76 @@ const postUrl = (id: string) => {
 };
 ```
 
-L’ajout d’une colonne « Langue » rend également explicites les lignes qui partagent le même slug.
+Cette fonction évite que les liens du tableau pointent vers `/blog/en/...` au lieu de `/en/blog/...`. La colonne de langue distingue les traductions qui partagent le même slug.
 
-## Les outils complémentaires
+## Outil 7 — `BaseHead` et le SEO
 
-### Internationalisation
+Le composant `BaseHead.astro` centralise les informations de la balise `<head>` :
 
-La documentation Astro propose une recette complète pour [utiliser les collections avec du contenu traduit](https://docs.astro.build/en/recipes/i18n/#use-collections-for-translated-content).
+- Le titre et la description.
+- L’URL canonique.
+- L’image sociale.
+- Les métadonnées Open Graph.
+- Les métadonnées d’article comme les dates et les tags.
+- Le favicon, les polices et le sitemap.
 
-### SEO
+Cette centralisation évite de répéter les mêmes balises sur chaque page et garantit une structure cohérente.
 
-[Astro SEO](https://github.com/jonasmerlin/astro-seo#readme) peut simplifier la génération des métadonnées. Dans ce blog, le composant `BaseHead` centralise déjà le titre, la description, l’image sociale et les informations Open Graph.
+[Astro SEO](https://github.com/jonasmerlin/astro-seo#readme) est une alternative intéressante pour générer ces métadonnées. Le composant actuel couvre déjà les besoins principaux du blog, mais les liens `hreflang` entre traductions restent une amélioration possible.
 
-Pour un site bilingue, il faut aussi prévoir des liens `hreflang` entre les versions françaises et anglaises.
+## Outil 8 — Lucide Astro
 
-### Icônes
+[Lucide Astro](https://lucide.dev/guide/packages/lucide-astro) fournit des icônes SVG sous forme de composants.
 
-[Lucide Astro](https://lucide.dev/guide/packages/lucide-astro) fournit des icônes SVG cohérentes sous forme de composants. Cela évite de copier manuellement de longs blocs SVG dans chaque composant.
+```astro
+---
+import { Moon, Sun } from 'lucide-astro';
+---
 
-## Les erreurs à éviter
-
-### Créer les fichiers sans les ajouter à Git
-
-Un fichier MDX peut être détecté localement par Astro tout en restant absent du déploiement s’il n’est pas suivi par Git.
-
-```bash
-git status --short
-git add src/content/blog/en
+<button aria-label="Changer de thème">
+  <Sun class="sun-icon" />
+  <Moon class="moon-icon" />
+</button>
 ```
 
-Il faut toujours vérifier que les nouvelles traductions sont présentes dans le commit envoyé au serveur.
+Cela rend le code plus lisible que de copier le contenu complet de chaque SVG. Les icônes partagent également le même style graphique et restent personnalisables avec CSS.
 
-### Utiliser le mauvais ordre dans les routes
+## Outil 9 — La commande de validation
 
-```text
-Incorrect : /blog/en/astro-tools/
-Correct   : /en/blog/astro-tools/
-```
-
-La structure des dossiers de contenu ne doit pas être concaténée aveuglément à la structure des pages.
-
-### Placer un bloc style hors du head
-
-Un bloc `<style>` placé entre `</head>` et `<body>` produit un document HTML invalide. Selon le navigateur ou les règles de sécurité, le style peut ne pas être appliqué.
-
-Pour les styles spécifiques, le bloc doit rester dans `<head>`. Pour les règles partagées ou essentielles, une feuille globale compilée par Astro est souvent plus robuste.
-
-### Oublier de reconstruire après l’ajout de contenu
-
-La vérification finale reste simple :
+L’outil final est simplement le build Astro :
 
 ```bash
 npm run build
 ```
 
-Le journal du build doit mentionner chaque route française et anglaise attendue.
+Cette commande :
+
+- Valide le schéma des collections.
+- Compile les fichiers MDX.
+- Génère les routes françaises et anglaises.
+- Optimise les images.
+- Produit les fichiers statiques dans `dist/`.
+
+Après l’ajout d’une traduction, le journal doit afficher la nouvelle route. Il faut aussi vérifier que le fichier est suivi par Git :
+
+```bash
+git status --short
+```
+
+Un article présent localement mais non ajouté à Git ne sera pas inclus dans un déploiement construit depuis le dépôt.
 
 ## Conclusion
 
-Astro rend la création d’un blog multilingue assez directe, à condition de distinguer clairement trois choses : l’identifiant du contenu, la route publique et le chemin de base du déploiement.
+Chaque outil répond à une responsabilité précise :
 
-Les collections valident les données, les dossiers `fr` et `en` structurent les traductions, les routes dynamiques génèrent les pages et la page de statut fournit une vue globale du contenu. Cette base peut maintenant être complétée par des métadonnées `hreflang` et un système de détection automatique des traductions manquantes.
+- **Content Collections** structure et valide les articles.
+- **MDX** enrichit le contenu.
+- **Les routes dynamiques** génèrent les pages statiques.
+- **Le système i18n** sépare réellement les traductions.
+- **BASE_URL** sécurise les liens en local et en production.
+- **La page de statut** contrôle le contenu.
+- **BaseHead** centralise le SEO.
+- **Lucide Astro** simplifie les icônes.
+- **Le build Astro** vérifie l’ensemble avant le déploiement.
+
+Cette séparation rend le blog plus facile à comprendre, tester et faire évoluer.

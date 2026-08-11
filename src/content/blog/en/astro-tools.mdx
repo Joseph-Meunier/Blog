@@ -1,37 +1,37 @@
 ---
-title: 'The Astro tools behind this blog'
-description: 'Internationalization, content collections, localized routes and SEO: the tools and techniques used to evolve this Astro blog.'
+title: 'The Astro tools used to build this blog'
+description: 'An overview of the tools used in this Astro blog: Content Collections, MDX, i18n, dynamic routes, BASE_URL, the status page, SEO and Lucide.'
 startDate: '2025-11-07'
 pubDate: '2026-08-11'
 updatedDate: '2026-08-11'
 heroImage: '../../../assets/articles/astro-tools/hero.webp'
 isPublished: true
 readingTime: '9 min'
-tags: ['astro', 'i18n', 'mdx', 'seo', 'typescript']
+tags: ['astro', 'content-collections', 'mdx', 'i18n', 'seo', 'typescript']
 ---
 
-Astro provides a lightweight but flexible foundation for building a complete multilingual blog. While evolving this site, I had to organize translations, generate consistent routes and avoid several issues involving links and deployment paths.
+This blog does not rely on one single tool. It combines several Astro features, each solving a specific problem: writing posts, validating metadata, creating translations, generating pages and building links that work in development and production.
 
-This article presents the tools and techniques used, including the concrete fixes made to the blog.
+Here are those tools, presented separately with their role and concrete use in the project.
 
 ## Table of contents
 
-- [Content collections](#content-collections)
-- [Organizing posts by language](#organizing-posts-by-language)
-- [Generating the post list](#generating-the-post-list)
-- [Building localized URLs](#building-localized-urls)
-- [Generating individual post pages](#generating-individual-post-pages)
-- [Handling the base path](#handling-the-base-path)
-- [Building a status page](#building-a-status-page)
-- [Additional tools](#additional-tools)
-- [Mistakes to avoid](#mistakes-to-avoid)
+- [Astro Content Collections](#tool-1--astro-content-collections)
+- [MDX](#tool-2--mdx)
+- [Astro dynamic routes](#tool-3--astro-dynamic-routes)
+- [The blog i18n system](#tool-4--the-blog-i18n-system)
+- [import.meta.env.BASE_URL](#tool-5--importmetaenvbase_url)
+- [The status page](#tool-6--the-status-page)
+- [BaseHead and SEO](#tool-7--basehead-and-seo)
+- [Lucide Astro](#tool-8--lucide-astro)
+- [The validation command](#tool-9--the-validation-command)
 - [Conclusion](#conclusion)
 
-## Content collections
+## Tool 1 — Astro Content Collections
 
-Astro content collections load Markdown and MDX files while validating their metadata with a TypeScript schema.
+**Content Collections** are the foundation of the article system. They load Markdown and MDX files and validate their frontmatter against a schema.
 
-This project recursively loads every article inside `src/content/blog`:
+The blog collection is defined in `src/content.config.ts`:
 
 ```ts
 import { defineCollection, z } from 'astro:content';
@@ -45,9 +45,9 @@ const blog = defineCollection({
   schema: ({ image }) => z.object({
     title: z.string(),
     description: z.string(),
+    startDate: z.coerce.date(),
     pubDate: z.coerce.date(),
     updatedDate: z.coerce.date(),
-    startDate: z.coerce.date(),
     heroImage: image(),
     isPublished: z.boolean(),
     tags: z.array(z.string()).optional(),
@@ -58,81 +58,66 @@ const blog = defineCollection({
 export const collections = { blog };
 ```
 
-This schema prevents incomplete content from being published. Astro reports an invalid date, missing image or incorrectly typed field during the build.
+### What this tool provides
 
-## Organizing posts by language
+- A shared structure for every article.
+- Validation for dates, images, tags and publication states.
+- Clear errors during the build.
+- A typed API through `getCollection('blog')`.
 
-Translations live in two directories and share the same slugs:
+The three dates have distinct meanings:
+
+- `startDate`: when writing started.
+- `pubDate`: when the article was published.
+- `updatedDate`: the latest update.
+
+The layout must use the correct field for each card. Displaying `pubDate` under “Written on” produces incorrect information even though the build remains valid.
+
+## Tool 2 — MDX
+
+**MDX** combines Markdown syntax with JSX and Astro components.
+
+An article begins with its frontmatter:
+
+```mdx
+---
+title: 'The Astro tools used to build this blog'
+startDate: '2025-11-07'
+pubDate: '2025-08-11'
+updatedDate: '2026-08-11'
+isPublished: false
+---
+```
+
+The rest of the file contains headings, lists, links, images and code blocks. MDX can also import a constant or component when an article needs more advanced behavior.
+
+### When should MDX be used?
+
+MDX is useful for:
+
+- Embedding an interactive component in an article.
+- Rendering conditional content.
+- Reusing an existing Astro component.
+- Keeping a Markdown-like syntax for editorial content.
+
+A plain `.md` file is enough for a purely editorial post. This project uses `.mdx` to keep the option of enriching tutorials later.
+
+## Tool 3 — Astro dynamic routes
+
+Files inside `src/pages` define public URLs. Bracketed segments are dynamic:
 
 ```text
-src/content/blog/
-├── fr/
-│   ├── astro-blog.mdx
-│   └── astro-tools.mdx
-└── en/
-    ├── astro-blog.mdx
-    └── astro-tools.mdx
+src/pages/[lang]/blog/[...slug].astro
 ```
 
-The content IDs generated by Astro include the language:
+This single page can generate:
 
 ```text
-fr/astro-tools
-en/astro-tools
+/fr/blog/astro-tools/
+/en/blog/astro-tools/
 ```
 
-Every translation is a real article. The English page does not silently reuse French content: its title, description, tags, table of contents and body are translated.
-
-This structure also lets a translation be published later, provided the interface handles a temporarily missing language.
-
-## Generating the post list
-
-The `src/pages/[lang]/blog/[...page].astro` page reads the language from the URL and filters the collection:
-
-```ts
-const allPosts = await getCollection('blog');
-
-const posts = allPosts
-  .filter((post) => post.id.startsWith(`${lang}/`))
-  .filter((post) =>
-    !isProd ||
-    (post.data.isPublished && post.data.pubDate <= new Date())
-  )
-  .sort(
-    (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
-  );
-```
-
-Drafts and scheduled posts remain visible during development. Production only displays published posts whose publication date has passed.
-
-The results are then passed to `paginate`:
-
-```ts
-return paginate(posts, {
-  params: { lang },
-  pageSize: 10,
-});
-```
-
-## Building localized URLs
-
-A content ID is not directly a public URL. For `en/astro-tools`, the expected route is `/en/blog/astro-tools/`, not `/blog/en/astro-tools/`.
-
-The language must be separated from the slug:
-
-```ts
-const [postLang, ...slugParts] = post.id.split('/');
-const slug = slugParts.join('/');
-const url = `${siteBase}/${postLang}/blog/${slug}/`;
-```
-
-The blog list and status page now apply this rule. Moving it into a shared utility would be a useful improvement if more pages need to generate the same links.
-
-## Generating individual post pages
-
-The dynamic route `src/pages/[lang]/blog/[...slug].astro` generates a static page for every collection entry.
-
-The content ID is converted into route parameters:
+Each collection ID is converted into route parameters:
 
 ```ts
 const [lang, ...slugParts] = post.id.split('/');
@@ -146,44 +131,80 @@ return {
 };
 ```
 
-Astro can then build both variants:
+The `[...slug]` segment also supports nested slugs. Content identified as `en/guides/astro-tools` could generate `/en/blog/guides/astro-tools/`.
+
+## Tool 4 — The blog i18n system
+
+Translations are separate, complete files:
 
 ```text
-/fr/blog/astro-tools/
-/en/blog/astro-tools/
+src/content/blog/
+├── fr/
+│   └── astro-tools.mdx
+└── en/
+    └── astro-tools.mdx
 ```
 
-These are real static pages: fast to serve and easy for search engines to index.
+Astro generates the IDs `fr/astro-tools` and `en/astro-tools`.
 
-## Handling the base path
+The blog list filters the collection using the route language:
 
-A site deployed inside a subdirectory—for example on GitHub Pages—cannot assume its root is always `/`.
+```ts
+const posts = allPosts
+  .filter((post) => post.id.startsWith(`${lang}/`))
+  .filter((post) =>
+    !isProd ||
+    (post.data.isPublished && post.data.pubDate <= new Date())
+  )
+  .sort((a, b) =>
+    b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+  );
+```
 
-Astro exposes the configured path through `import.meta.env.BASE_URL`:
+The English page should not silently display French posts. Each translation needs its own title, description, tags, table of contents and body.
+
+Astro also documents how to [use content collections for translated content](https://docs.astro.build/en/recipes/i18n/#use-collections-for-translated-content).
+
+## Tool 5 — `import.meta.env.BASE_URL`
+
+`BASE_URL` creates links that work both at a domain root and within a subdirectory such as a GitHub Pages project site.
 
 ```ts
 const siteBase = import.meta.env.BASE_URL.replace(/\/$/, '');
 ```
 
-It can then prefix generated URLs:
+The language must be separated from the slug when building an article URL:
 
 ```ts
-const url = `${siteBase}/${lang}/blog/${slug}/`;
+const [postLang, ...slugParts] = post.id.split('/');
+const slug = slugParts.join('/');
+const url = `${siteBase}/${postLang}/blog/${slug}/`;
 ```
 
-This works locally with `/` and in production with a path such as `/Blog/`. The same principle applies to favicons, fonts, sitemaps and other files placed in `public/`.
+Segment order matters:
 
-## Building a status page
+```text
+Incorrect: /blog/en/astro-tools/
+Correct:   /en/blog/astro-tools/
+```
 
-The `/status` page displays every article, including drafts and translated versions. It provides a quick way to inspect:
+The same base path should be used for favicons, fonts, sitemaps and other resources from `public/`.
 
-- The article language.
-- Its state: draft, scheduled or published.
-- Its creation, publication and update dates.
-- Its hero image.
-- The link to the generated page.
+## Tool 6 — The status page
 
-A dedicated function prevents the language and `blog` segments from being reversed:
+The `/status` page is an internal project tool. It uses `getCollection` to display every article, including drafts and translations.
+
+It shows:
+
+- The hero image.
+- The language.
+- The title.
+- The publication state.
+- The creation date.
+- The publication date.
+- The update date.
+
+Links are generated by a dedicated function:
 
 ```ts
 const postUrl = (id: string) => {
@@ -192,64 +213,76 @@ const postUrl = (id: string) => {
 };
 ```
 
-Adding a language column also makes rows with identical slugs easy to distinguish.
+This prevents table links from pointing to `/blog/en/...` instead of `/en/blog/...`. The language column distinguishes translations that share a slug.
 
-## Additional tools
+## Tool 7 — `BaseHead` and SEO
 
-### Internationalization
+The `BaseHead.astro` component centralizes the contents of the page `<head>`:
 
-Astro documents how to [use content collections for translated content](https://docs.astro.build/en/recipes/i18n/#use-collections-for-translated-content).
+- Title and description.
+- Canonical URL.
+- Social preview image.
+- Open Graph metadata.
+- Article metadata such as dates and tags.
+- Favicon, fonts and sitemap.
 
-### SEO
+Centralizing these values avoids repeating tags across pages and keeps their structure consistent.
 
-[Astro SEO](https://github.com/jonasmerlin/astro-seo#readme) can simplify metadata generation. In this blog, the `BaseHead` component already centralizes the page title, description, social image and Open Graph information.
+[Astro SEO](https://github.com/jonasmerlin/astro-seo#readme) is another option for generating this metadata. The current component already covers the blog’s main requirements, although `hreflang` links between translations remain a possible improvement.
 
-A bilingual site should also expose `hreflang` links between the French and English versions.
+## Tool 8 — Lucide Astro
 
-### Icons
+[Lucide Astro](https://lucide.dev/guide/packages/lucide-astro) provides SVG icons as components.
 
-[Lucide Astro](https://lucide.dev/guide/packages/lucide-astro) provides consistent SVG icons as components, avoiding large inline SVG blocks throughout the codebase.
+```astro
+---
+import { Moon, Sun } from 'lucide-astro';
+---
 
-## Mistakes to avoid
-
-### Creating files without adding them to Git
-
-Astro may detect a local MDX file even though it remains absent from the deployment when Git does not track it.
-
-```bash
-git status --short
-git add src/content/blog/en
+<button aria-label="Change theme">
+  <Sun class="sun-icon" />
+  <Moon class="moon-icon" />
+</button>
 ```
 
-Always confirm that new translations are included in the commit sent to the deployment server.
+This is easier to read than copying the complete contents of each SVG. Icons also share a coherent visual style and remain customizable with CSS.
 
-### Using the wrong route order
+## Tool 9 — The validation command
 
-```text
-Incorrect: /blog/en/astro-tools/
-Correct:   /en/blog/astro-tools/
-```
-
-The content directory structure must not be blindly appended to the page route.
-
-### Placing styles outside the head
-
-A `<style>` block placed between `</head>` and `<body>` produces invalid HTML. Depending on the browser or security policy, those styles may not apply.
-
-Page-specific styles belong inside `<head>`. Shared or essential rules are often safer in a global stylesheet compiled by Astro.
-
-### Forgetting to rebuild after adding content
-
-The final verification is straightforward:
+The final tool is the Astro build itself:
 
 ```bash
 npm run build
 ```
 
-The build output should list every expected French and English route.
+This command:
+
+- Validates the collection schema.
+- Compiles MDX files.
+- Generates French and English routes.
+- Optimizes images.
+- Produces static files inside `dist/`.
+
+After adding a translation, its route should appear in the build output. The file must also be tracked by Git:
+
+```bash
+git status --short
+```
+
+An article available locally but missing from Git will not appear in a deployment built from the repository.
 
 ## Conclusion
 
-Astro makes a multilingual blog relatively straightforward as long as three concepts remain separate: the content ID, the public route and the deployment base path.
+Each tool has a clear responsibility:
 
-Collections validate the data, the `fr` and `en` directories organize translations, dynamic routes generate the pages, and the status screen provides a global view of the content. This foundation can now be extended with `hreflang` metadata and automatic detection of missing translations.
+- **Content Collections** structure and validate posts.
+- **MDX** enriches content.
+- **Dynamic routes** generate static pages.
+- **The i18n system** keeps translations genuinely separate.
+- **BASE_URL** makes links reliable locally and in production.
+- **The status page** provides content oversight.
+- **BaseHead** centralizes SEO.
+- **Lucide Astro** simplifies icons.
+- **The Astro build** validates everything before deployment.
+
+This separation makes the blog easier to understand, test and extend.
