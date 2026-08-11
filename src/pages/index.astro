@@ -1,3 +1,25 @@
 ---
-return Astro.redirect(`${import.meta.env.BASE_URL}fr/`);
+const siteBase = import.meta.env.BASE_URL.replace(/\/$/, '');
+const englishUrl = `${siteBase}/en/`;
 ---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="robots" content="noindex" />
+		<title>Joseph Meunier</title>
+		<script is:inline define:vars={{ siteBase }}>
+			const preferredLanguage = (navigator.languages?.[0] || navigator.language || 'en').toLowerCase();
+			const language = preferredLanguage.startsWith('fr') ? 'fr' : 'en';
+			window.location.replace(`${siteBase}/${language}/`);
+		</script>
+		<noscript><meta http-equiv="refresh" content={`0;url=${englishUrl}`} /></noscript>
+	</head>
+	<body>
+		<noscript>
+			<a href={englishUrl}>Continue to the website</a>
+		</noscript>
+	</body>
+</html>
