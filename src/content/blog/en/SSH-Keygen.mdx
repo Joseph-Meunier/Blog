@@ -1,0 +1,133 @@
+---
+title: "Configure an SSH key for Git and GitHub"
+description: "Learn how to generate, add and use an SSH key with GitHub for secure, passwordless connections."
+startDate: '2025-11-07'
+pubDate: '2025-11-16'
+updatedDate: '2025-11-16'
+heroImage: '../../../assets/articles/SSH-Keygen/hero.webp'
+isPublished: true
+tags: ["git", "ssh", "github", "security", "development"]
+readingTime: "6 min"
+---
+
+Want to push code to GitHub without entering your password every time? The solution is an SSH key. It is simpler, faster and, most importantly, more secure.
+
+## Table of contents
+
+- [Why use SSH?](#why-use-ssh)
+- [Prerequisites](#prerequisites)
+- [Configure your Git identity](#configure-your-git-identity)
+- [Generate an SSH key](#generate-an-ssh-key)
+- [Configure a passphrase](#configure-a-passphrase)
+- [Add the key to the SSH agent](#add-the-key-to-the-ssh-agent)
+- [Add the key to GitHub](#add-the-key-to-github)
+- [Test the connection](#test-the-connection)
+- [Conclusion](#conclusion)
+
+## Why use SSH?
+
+SSH lets you access GitHub without a username or password by using a pair of keys:
+
+- A **private key**, which stays on your computer.
+- A **public key**, which is stored on GitHub.
+
+Only the public key should be shared. Your private key remains secret, and no sensitive credential is transmitted when you connect.
+
+## Prerequisites
+
+This guide uses macOS commands, but the process is similar on Linux. You need access to a terminal and Git installed on your computer. Replace `GastonDeSade` and `gastondesade@proton.me` with your own username and email address.
+
+Check your Git installation:
+
+```bash
+git --version
+```
+
+You should see the installed version, for example:
+
+```bash
+git version 2.50.1 (Apple Git-155)
+```
+
+If Git is missing, install it from [git-scm.com](https://git-scm.com/).
+
+## Configure your Git identity
+
+Check the configuration for the current repository and your global user configuration:
+
+```bash
+git config --local -l
+git config --global -l
+```
+
+If necessary, configure your name and email globally:
+
+```bash
+git config --global user.name "GastonDeSade"
+git config --global user.email "gastondesade@proton.me"
+```
+
+## Generate an SSH key
+
+First, check whether you already have keys:
+
+```bash
+ls -la ~/.ssh/
+```
+
+If no suitable key such as `id_ed25519.pub` exists, generate a new pair:
+
+```bash
+ssh-keygen -t ed25519 -C "gastondesade@proton.me"
+```
+
+Press Enter to accept the default location (`/Users/your_username/.ssh/id_ed25519`).
+
+## Configure a passphrase
+
+You may protect the private key with a passphrase. Without one, the key is more convenient. With one, the key remains protected if somebody gains access to the file. An SSH agent can remember the passphrase during your session.
+
+```bash
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+```
+
+## Add the key to the SSH agent
+
+Start the agent and add your private key:
+
+```bash
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ed25519
+```
+
+If you configured a passphrase, enter it when prompted.
+
+## Add the key to GitHub
+
+Display your public key:
+
+```bash
+cat ~/.ssh/id_ed25519.pub
+```
+
+Copy the complete output. On GitHub, open **Settings → SSH and GPG keys**, select **New SSH key**, give it a recognizable name such as “MacBook”, paste the public key and choose **Add SSH key**.
+
+## Test the connection
+
+```bash
+ssh -T git@github.com
+```
+
+GitHub should confirm that you authenticated successfully.
+
+## Conclusion
+
+You can now use GitHub through SSH without entering your password for every push. For more details, read the [GitHub SSH documentation](https://docs.github.com/en/authentication/connecting-to-github-with-ssh).
+
+## Quiz
+
+Hover over each question to reveal the answer. This interaction is not available on touch-only devices.
+
+- <span class="hover-reveal" data-tooltip="An SSH key is a pair of cryptographic keys used to authenticate an SSH connection.">What is an SSH key?</span>
+- <span class="hover-reveal" data-tooltip="The public key is shared with GitHub, while the private key must remain secret on your computer.">What is the difference between a public and a private key?</span>

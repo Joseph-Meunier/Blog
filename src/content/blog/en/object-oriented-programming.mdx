@@ -1,0 +1,147 @@
+---
+title: 'Object-Oriented Programming'
+description: 'What is object-oriented programming?'
+startDate: '2025-06-19'
+pubDate: '2025-06-19'
+updatedDate: '2025-06-22'
+heroImage: '../../../assets/articles/object-oriented-programming/hero.webp'
+isPublished: true
+readingTime: '7 to 9 minutes'
+---
+
+## What is object-oriented programming?
+
+Object-oriented programming, or **OOP**, is a programming paradigm based on objects that combine data with the code that manipulates that data. It helps model real concepts and organize larger applications into reusable, maintainable units.
+
+## Table of contents
+
+- [Classes](#classes)
+- [Objects and instantiation](#objects-and-instantiation)
+- [Properties](#properties)
+- [Methods](#methods)
+- [The four principles of OOP](#the-four-principles-of-oop)
+- [Conclusion](#conclusion)
+
+## Classes
+
+A class is a blueprint that defines the state and behavior shared by a type of object.
+
+```csharp
+public class Car
+{
+    public string Brand { get; set; }
+    public int Speed { get; private set; }
+
+    public void Accelerate(int amount)
+    {
+        Speed += amount;
+    }
+}
+```
+
+## Objects and instantiation
+
+An object is a concrete instance of a class. Instantiation allocates that object and initializes its values.
+
+```csharp
+var car = new Car { Brand = "Honda" };
+car.Accelerate(20);
+```
+
+Two objects created from the same class share the same structure but keep independent state.
+
+## Properties
+
+Properties expose an object's data through controlled accessors. In C#, `get` reads a value and `set` changes it. Restricting a setter prevents arbitrary changes from outside the class.
+
+```csharp
+public string Name { get; set; } = string.Empty;
+public DateTime CreatedAt { get; } = DateTime.UtcNow;
+```
+
+## Methods
+
+Methods define an object's behavior. They can validate inputs and guarantee that the object remains in a valid state.
+
+```csharp
+public void Withdraw(decimal amount)
+{
+    if (amount <= 0 || amount > Balance)
+        throw new ArgumentOutOfRangeException(nameof(amount));
+
+    Balance -= amount;
+}
+```
+
+## The four principles of OOP
+
+### Encapsulation
+
+Encapsulation hides internal state and requires callers to use a controlled public API. This prevents invalid changes and reduces coupling.
+
+```csharp
+public class BankAccount
+{
+    public decimal Balance { get; private set; }
+
+    public void Deposit(decimal amount)
+    {
+        if (amount <= 0) throw new ArgumentOutOfRangeException(nameof(amount));
+        Balance += amount;
+    }
+}
+```
+
+### Inheritance
+
+Inheritance creates a specialized class from a more general one. The child class reuses accessible behavior from its parent.
+
+```csharp
+public class Animal
+{
+    public virtual string Speak() => "...";
+}
+
+public class Dog : Animal
+{
+    public override string Speak() => "Woof";
+}
+```
+
+Inheritance is useful for genuine “is-a” relationships, but composition is often more flexible when objects only need to collaborate.
+
+### Polymorphism
+
+Polymorphism lets several types be used through one common contract. Calling the same method can produce behavior specific to the runtime type.
+
+```csharp
+Animal[] animals = [new Animal(), new Dog()];
+foreach (var animal in animals)
+    Console.WriteLine(animal.Speak());
+```
+
+### Abstraction
+
+Abstraction exposes what a component does while hiding how it does it. Interfaces and abstract classes are common abstraction tools.
+
+```csharp
+public interface IMessageSender
+{
+    Task SendAsync(string message);
+}
+```
+
+Application code can depend on `IMessageSender` without knowing whether the implementation sends email, SMS or a notification.
+
+## Conclusion
+
+Classes and objects provide structure; encapsulation, inheritance, polymorphism and abstraction provide design tools. Used carefully, they make software easier to evolve. OOP is not the answer to every problem, but it remains especially effective for domains with rich behavior and long-lived state.
+
+## Quiz
+
+- <span class="hover-reveal" data-tooltip="A class is a blueprint; an object is a concrete instance of that blueprint.">What is the difference between a class and an object?</span>
+- <span class="hover-reveal" data-tooltip="Encapsulation protects internal state behind a controlled public API.">What does encapsulation achieve?</span>
+
+## References
+
+- [Microsoft C# documentation](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/object-oriented/)

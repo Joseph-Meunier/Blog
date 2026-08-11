@@ -1,0 +1,135 @@
+---
+title: "Astro and GitHub Actions: simplified CI/CD"
+description: "Learn how to automate an Astro deployment with GitHub Actions and configure Astro correctly for GitHub Pages."
+startDate: "2025-11-07"
+pubDate: "2025-11-30"
+updatedDate: "2025-11-08"
+heroImage: "../../../assets/articles/astro-cicd-github/hero.webp"
+isPublished: true
+readingTime: "8 min"
+tags: ["astro", "github-actions", "cicd", "deployment", "devops"]
+---
+
+GitHub Actions makes it straightforward to automate the deployment of an Astro blog. This guide configures a workflow that publishes your site after every push.
+
+## Table of contents
+
+- [Prerequisites](#prerequisites)
+- [Configure Astro](#configure-astro)
+- [Adapt routes and assets](#adapt-routes-and-assets)
+- [Fix navigation links](#fix-navigation-links)
+- [Fix imports and favicons](#fix-imports-and-favicons)
+- [Create the GitHub Actions workflow](#create-the-github-actions-workflow)
+- [Deploy to GitHub Pages](#deploy-to-github-pages)
+- [Conclusion](#conclusion)
+
+## Prerequisites
+
+You need a working static Astro site, a GitHub repository and basic Git knowledge. If you do not have a site yet, start with [Build a modern blog with Astro](/en/blog/astro-blog/).
+
+## Configure Astro
+
+GitHub Pages serves project sites from a repository subdirectory. Configure both `site` and `base` in `astro.config.mjs`:
+
+```mjs
+export default defineConfig({
+  site: 'https://myuser.github.io/repository-name',
+  base: '/repository-name',
+});
+```
+
+If the repository is named `repository-name`, the site root is `/repository-name/`, not `/`. Without this prefix, links, images and scripts will fail in production.
+
+## Adapt routes and assets
+
+You can use a different base path locally and in production:
+
+```mjs
+const isProd = process.env.NODE_ENV === 'production';
+
+export default defineConfig({
+  site: 'https://myuser.github.io/Blog',
+  base: isProd ? '/Blog' : '/',
+});
+```
+
+This keeps local URLs convenient while generating the correct production paths.
+
+## Fix navigation links
+
+Navigation must include the base path as well:
+
+```astro
+<HeaderLink href={isProd ? '/Blog' : '/'}>Home</HeaderLink>
+<HeaderLink href={isProd ? '/Blog/blog' : '/blog'}>Blog</HeaderLink>
+<HeaderLink href={isProd ? '/Blog/about' : '/about'}>About</HeaderLink>
+```
+
+For a larger project, prefer `import.meta.env.BASE_URL` or a shared URL helper so you do not duplicate this logic.
+
+## Fix imports and favicons
+
+Static public assets also need the correct base URL:
+
+```astro
+<link rel="icon" href={`${import.meta.env.BASE_URL}favicon.ico`} />
+<link rel="sitemap" href={`${import.meta.env.BASE_URL}sitemap-index.xml`} />
+<link rel="preload" href={`${import.meta.env.BASE_URL}fonts/atkinson-regular.woff`} as="font" type="font/woff" crossorigin />
+```
+
+## Create the GitHub Actions workflow
+
+Create `.github/workflows/deploy.yml`:
+
+```yaml
+name: Deploy Astro to GitHub Pages
+on:
+  push:
+    branches: [master]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Build site
+        run: npm run build
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          publish_branch: gh-pages
+          enable_jekyll: false
+```
+
+This workflow checks out the repository, installs Node.js and the dependencies, builds Astro, then publishes the generated `dist` directory to the `gh-pages` branch.
+
+## Deploy to GitHub Pages
+
+In the GitHub repository, open **Settings → Pages**. Under **Build and deployment**, choose **Deploy from a branch**, then select the `gh-pages` branch.
+
+Commit and push your configuration:
+
+```bash
+git add .
+git commit -m "Initial deployment"
+git push
+```
+
+GitHub Actions will build and deploy the site automatically. It will be available at `https://username.github.io/Blog/`.
+
+## Conclusion
+
+Connecting Astro to GitHub Actions gives you a fast and reliable deployment pipeline. Your published site stays synchronized with your repository without manual deployment steps.
+
+- [Astro documentation](https://docs.astro.build)
+- [GitHub Actions documentation](https://docs.github.com/en/actions)

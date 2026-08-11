@@ -1,0 +1,74 @@
+---
+title: 'REST APIs'
+description: "What is a REST API?"
+startDate: '2025-06-12'
+pubDate: '2025-06-12'
+updatedDate: '2025-06-22'
+heroImage: '../../../assets/articles/rest-api/hero.webp'
+isPublished: true
+readingTime: '5 to 7 minutes'
+---
+
+## What is a REST API?
+
+A **REST API**—Representational State Transfer—is an architectural style for application programming interfaces. It organizes access to **resources** through well-defined URLs and standard HTTP verbs.
+
+## Table of contents
+
+- [REST principles](#rest-principles)
+- [Example: SWAPI](#example-swapi)
+- [HTTP verbs](#http-verbs)
+- [Response formats](#response-formats)
+- [HTTP status codes](#http-status-codes)
+- [Summary](#summary)
+
+### REST principles
+
+A REST API is built around resources such as users, articles or products. Each resource has a stable URL, and clients manipulate it through HTTP requests. Requests remain stateless: every request contains all the information the server needs to process it.
+
+REST also separates the client from the server. A web interface, mobile application or another service can consume the same API without knowing how its data is stored.
+
+### Example: SWAPI
+
+[SWAPI](https://swapi.dev/) is a public API for Star Wars data. A request to `/api/people/1/` retrieves one character, while `/api/planets/` retrieves a collection of planets. This illustrates how nouns and identifiers form predictable resource URLs.
+
+### HTTP verbs
+
+- **GET** reads one or more resources.
+- **POST** creates a resource.
+- **PUT** replaces a complete resource.
+- **PATCH** updates part of a resource.
+- **DELETE** removes a resource.
+
+```http
+GET /api/articles/42 HTTP/1.1
+Host: example.com
+Accept: application/json
+```
+
+### Response formats
+
+REST does not require JSON, but JSON is the most common format because it is lightweight and supported by every major programming language.
+
+```json
+{
+  "id": 42,
+  "title": "Understanding REST APIs",
+  "published": true
+}
+```
+
+### HTTP status codes
+
+- `200 OK`: the request succeeded.
+- `201 Created`: a resource was created.
+- `204 No Content`: the request succeeded without a response body.
+- `400 Bad Request`: the request is invalid.
+- `401 Unauthorized`: authentication is required.
+- `403 Forbidden`: the client lacks permission.
+- `404 Not Found`: the resource does not exist.
+- `500 Internal Server Error`: the server encountered an unexpected error.
+
+### Summary
+
+A REST API exposes resources through predictable URLs, uses HTTP verbs to express actions, returns standard status codes and usually exchanges JSON. These conventions make APIs easier to understand, test and integrate.

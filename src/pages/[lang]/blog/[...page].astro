@@ -175,10 +175,11 @@ const postStatus = (post: CollectionEntry<'blog'>) => {
 				<ul>
 					{
 						page.data.map((post) => {
-							const slug = post.id.split('/').slice(1).join('/');
+							const [postLang, ...slugParts] = post.id.split('/');
+							const slug = slugParts.join('/');
 							return (
 							<li>
-								<a href={`${siteBase}/${lang}/blog/${slug}/`}
+								<a href={`${siteBase}/${postLang}/blog/${slug}/`}
 								   class={!isProd ? (postStatus(post).status === 'Publié' ? 'post-published' : (postStatus(post).status === 'À venir' ? 'post-upcoming' : 'post-draft')) : ''}>
 									{post.data.heroImage && (
 										<Image width={720} height={360} src={post.data.heroImage} alt="" />

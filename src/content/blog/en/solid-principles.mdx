@@ -1,0 +1,131 @@
+---
+title: 'SOLID and KISS Principles'
+description: 'What are the SOLID and KISS principles?'
+startDate: '2025-06-20'
+pubDate: '2025-06-20'
+updatedDate: '2025-06-22'
+heroImage: '../../../assets/articles/solid-principles/hero.webp'
+isPublished: true
+readingTime: '6 to 8 minutes'
+---
+
+## What are the SOLID principles?
+
+**SOLID** is a group of five design principles that help developers build maintainable, extensible and robust software. Popularized by Robert C. Martin, they are widely applied in object-oriented code.
+
+## Table of contents
+
+- [Single Responsibility](#s--single-responsibility-principle)
+- [Open/Closed](#o--openclosed-principle)
+- [Liskov Substitution](#l--liskov-substitution-principle)
+- [Interface Segregation](#i--interface-segregation-principle)
+- [Dependency Inversion](#d--dependency-inversion-principle)
+- [KISS](#kiss-principle)
+- [Conclusion](#conclusion)
+
+## SOLID
+
+### S — Single Responsibility Principle
+
+A class should have one reason to change. Mixing business rules, persistence and email delivery in one class makes every modification risky. Separate these responsibilities into focused services.
+
+```csharp
+public class InvoiceCalculator
+{
+    public decimal CalculateTotal(Invoice invoice) => invoice.Lines.Sum(x => x.Price);
+}
+
+public class InvoiceRepository
+{
+    public Task SaveAsync(Invoice invoice) => /* persistence */ Task.CompletedTask;
+}
+```
+
+### O — Open/Closed Principle
+
+Software entities should be open for extension but closed for modification. New behavior should usually be added without rewriting stable code.
+
+```csharp
+public interface IDiscount
+{
+    decimal Apply(decimal total);
+}
+
+public sealed class PremiumDiscount : IDiscount
+{
+    public decimal Apply(decimal total) => total * 0.9m;
+}
+```
+
+Adding another discount means creating a new implementation rather than editing a large conditional block.
+
+### L — Liskov Substitution Principle
+
+An instance of a subtype must be usable wherever its base type is expected without breaking the program's promises. A subtype must preserve the behavior and invariants of its parent contract.
+
+```csharp
+public interface IBird { void Eat(); }
+public interface IFlyingBird : IBird { void Fly(); }
+```
+
+Separating flying behavior prevents a penguin from being forced to implement an operation it cannot support.
+
+### I — Interface Segregation Principle
+
+Clients should not depend on methods they do not use. Prefer small, focused interfaces over one large interface that forces every implementation to support unrelated operations.
+
+```csharp
+public interface IPrinter { void Print(Document document); }
+public interface IScanner { void Scan(Document document); }
+
+public class BasicPrinter : IPrinter
+{
+    public void Print(Document document) { }
+}
+```
+
+### D — Dependency Inversion Principle
+
+High-level modules should not depend directly on low-level details. Both should depend on abstractions, allowing implementations to be replaced and tested independently.
+
+```csharp
+public interface INotificationSender
+{
+    Task SendAsync(string message);
+}
+
+public class OrderService(INotificationSender sender)
+{
+    public Task ConfirmAsync() => sender.SendAsync("Order confirmed");
+}
+```
+
+`OrderService` no longer cares whether the notification is sent by email, SMS or another provider.
+
+## KISS principle
+
+**Keep It Simple, Stupid** encourages the simplest design that solves the actual problem. Clever abstractions and premature flexibility often make code harder to understand.
+
+```csharp
+// Harder than necessary
+var activeUsers = users.Where(x => x.Status == UserStatus.Active).Select(x => x).ToList();
+
+// Clear and sufficient
+var activeUsers = users.Where(x => x.IsActive).ToList();
+```
+
+Simple does not mean careless. It means avoiding complexity that provides no current value.
+
+## Conclusion
+
+SOLID helps distribute responsibilities and control dependencies, while KISS keeps the resulting design understandable. Treat them as decision-making tools rather than rigid laws: the goal is software that is easy to change for the people maintaining it.
+
+## Quiz
+
+- <span class="hover-reveal" data-tooltip="Single Responsibility: a module should have one reason to change.">What does the S in SOLID mean?</span>
+- <span class="hover-reveal" data-tooltip="Keep It Simple, Stupid: choose the simplest solution that meets the need.">What does KISS encourage?</span>
+
+## References
+
+- Robert C. Martin, *Clean Architecture*
+- [SOLID principles overview](https://en.wikipedia.org/wiki/SOLID)
