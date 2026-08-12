@@ -100,7 +100,11 @@ html[data-theme="light"] {
 
 html[data-theme="light"] body {
 	background: #f7fafc !important;
-	background-image: none !important;
+	background-image:
+		linear-gradient(rgba(16, 42, 56, .055) 1px, transparent 1px),
+		linear-gradient(90deg, rgba(16, 42, 56, .055) 1px, transparent 1px) !important;
+	background-size: 40px 40px !important;
+	background-attachment: fixed !important;
 	color: #102a38;
 	forced-color-adjust: none;
 }
